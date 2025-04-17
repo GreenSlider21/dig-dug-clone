@@ -12,19 +12,48 @@ const PLAYER = 9;
 const POOKA = 8;
 const FYGAR = 7;
 const ROCK = 2;
-const CELL_SIZE = 10;
-const ROWS = 64/2;
-const COLS = 56/2;
+const CELL_SIZE = 20;
+const ROWS = 32;
+const COLS = 28;
 
 // varriables
 let grid;
 let level;
 
 // classes
-class Player {
+class Character {
   constructor(x, y){
     this.x = x;
     this.y = y;
+    this.colour = "blue";
+    this.speed = 1;
+  }
+
+  display() {
+    fill(this.colour);
+    square(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE + 1, this.y * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1, CELL_SIZE);
+    square(this.x * CELL_SIZE + 1, this.y * CELL_SIZE + 1, CELL_SIZE);
+  }
+
+  move() {
+    if (keyIsDown(87) === true) {
+      // move up
+      this.y -= this.speed;
+    }
+    if (keyIsDown(83) === true) {
+      // move down
+      this.y += this.speed;
+    }
+    if (keyIsDown(65) === true) {
+      // move left
+      this.x -= this.speed;
+    }
+    if (keyIsDown(68) === true) {
+      // move right
+      this.x += this.speed;
+    }
   }
 }
 
@@ -32,16 +61,21 @@ function preload() {
   level = loadJSON("level.json");
 }
 
+let taizo;
+
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
-  // grid = level;
-  grid = generateRandomGrid(ROWS, COLS);
+  taizo = new Character(1, 1);
+  grid = level;
 }
 
 function draw() {
   background(220);
   displayGrid();
-  // generateRandomGrid();
+
+  taizo.move();
+
+  taizo.display();
 }
 
 function displayGrid() {
@@ -78,43 +112,4 @@ function displayGrid() {
       }
     }
   }
-}
-
-function mousePressed() {
-  let x = Math.floor(mouseX/CELL_SIZE);
-  let y = Math.floor(mouseY/CELL_SIZE);
-
-  toggleCell(x,y);
-  toggleCell(x+1,y);
-  toggleCell(x,y+1);
-  toggleCell(x+1,y+1);
-}
-
-function toggleCell(x, y) {
-  // make sure cell your toggling is actually in the grid
-  if (x >= 0 && x < COLS && y >= 0 && y < ROWS){
-    if (grid[y][x] === EMPTY) {
-      grid[y][x] = DIGABLE;
-    }
-    else if (grid[y][x] === DIGABLE) {
-      grid[y][x] = EMPTY;
-    }
-  }
-}
-
-function generateRandomGrid(COLS, ROWS) {
-  let newGrid = [];
-  for (let y = 0; y < ROWS; y++) {
-    newGrid.push([]);
-    for (let x = 0; x < COLS; x++) {
-      //toss a 0 or 1 in randomly
-      if (random(100) < 50) {
-        newGrid[y].push(EMPTY);
-      }
-      else {
-        newGrid[y].push(DIGABLE);
-      }
-    }
-  }
-  return newGrid;
 }
