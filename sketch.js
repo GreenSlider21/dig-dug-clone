@@ -32,28 +32,43 @@ class Character {
   display() {
     fill(this.colour);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
-    square(this.x * CELL_SIZE + 1, this.y * CELL_SIZE, CELL_SIZE);
-    square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1, CELL_SIZE);
-    square(this.x * CELL_SIZE + 1, this.y * CELL_SIZE + 1, CELL_SIZE);
+    square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+  }
+  
+  move() {
+    console.log(this.x, this.y);
+      if (keyIsDown(87) === true) {
+        // move up
+        this.y -= this.speed;
+      }
+      if (keyIsDown(83) === true) {
+        // move down
+        this.y += this.speed;
+      }
+      if (keyIsDown(65) === true) {
+        // move left
+        this.x -= this.speed;
+      }
+      if (keyIsDown(68) === true) {
+        // move right
+        this.x += this.speed;
+      }
   }
 
-  move() {
-    if (keyIsDown(87) === true) {
-      // move up
-      this.y -= this.speed;
-    }
-    if (keyIsDown(83) === true) {
-      // move down
-      this.y += this.speed;
-    }
-    if (keyIsDown(65) === true) {
-      // move left
-      this.x -= this.speed;
-    }
-    if (keyIsDown(68) === true) {
-      // move right
-      this.x += this.speed;
-    }
+  tunnelMove() {
+    if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || 
+      this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === PLAYER) {
+        this.move();
+      }
+  }
+
+  digMove() {
+    if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && 
+      (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE ||grid[this.y][this.x+1] === DIGABLE ||grid[this.y+1][this.x+1] === DIGABLE)) {
+        this.move();
+      }
   }
 }
 
@@ -73,7 +88,8 @@ function draw() {
   background(220);
   displayGrid();
 
-  taizo.move();
+  taizo.tunnelMove();
+  taizo.digMove();
 
   taizo.display();
 }
