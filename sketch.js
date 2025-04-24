@@ -32,8 +32,9 @@ class Character {
     this.y = y;
     this.colour = "blue";
     this.speed = 1;
-    this.pumpColour = "purple"
-    this.attcking = false
+    this.pumpColour = "purple";
+    this.attcking = false;
+    this.facingDirection = "right";
   }
 
   display() {
@@ -45,23 +46,27 @@ class Character {
   }
   
   move() {
-    console.log(this.x, this.y);
+    console.log(this.x, this.y, this.facingDirection);
     // alows the player to move the four cardinal directions, but disallows diagnal movment
     if (this.attcking === false){
       if (keyIsDown(87) === true) {
         // move up
+        this.facingDirection = "up";
         this.y -= this.speed;
       }
       else if (keyIsDown(83) === true) {
         // move down
+        this.facingDirection = "down";
         this.y += this.speed;
       }
       else if (keyIsDown(65) === true) {
         // move left
+        this.facingDirection = "left";
         this.x -= this.speed;
       }
       else if (keyIsDown(68) === true) {
         // move right
+        this.facingDirection = "right";
         this.x += this.speed;
       }
     }
@@ -71,9 +76,26 @@ class Character {
     if (keyIsDown(32) === true) {
       this.attcking = true;
       fill(this.pumpColour);
-      square(this.x * CELL_SIZE + 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-      square(this.x * CELL_SIZE + 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-      square(this.x * CELL_SIZE + 4 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+      if (this.facingDirection === "up"){
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 2 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 3 * CELL_SIZE, CELL_SIZE);
+      }
+      else if (this.facingDirection === "down"){
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 2 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 3 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 4 * CELL_SIZE, CELL_SIZE);
+      }
+      else if (this.facingDirection === "left"){
+        square(this.x * CELL_SIZE - 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE - 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE - 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+      }
+      else if (this.facingDirection === "right"){
+        square(this.x * CELL_SIZE + 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE + 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE + 4 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+      }
     }
     else {
       this.attcking = false;
@@ -109,6 +131,43 @@ class Character {
   }
 }
 
+class Enemy {
+  constructor(x, y, colour) {
+    this.x = x;
+    this.y = y;
+    this.colour = colour;
+    this.speed = 1;
+  }
+
+  display() {
+    fill(this.colour);
+    square(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+    square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+  }
+
+  move() {
+    let choice = random(100);
+    if (choice < 25) {
+      // up
+      this.y -= this.speed;
+    }
+    else if (choice < 50) {
+      // down
+      this.y += this.speed;
+    }
+    else if (choice < 75) {
+      // left
+      this.x -= this.speed;
+    }
+    else {
+      // right
+      this.x += this.speed;
+    }
+  }
+}
+
 function preload() {
   level = loadJSON("level.json");
 }
@@ -117,7 +176,7 @@ let taizo;
 
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
-  taizo = new Character(1, 1);
+  taizo = new Character(12, 16);
   grid = level;
 }
 
@@ -127,7 +186,6 @@ function draw() {
 
   taizo.attck();
   taizo.playerMove();
-
   taizo.display();
 }
 
