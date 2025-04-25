@@ -18,12 +18,14 @@ const ROWS = 32;
 const COLS = 28;
 const WALKDELAY = 200;
 const DIGDELAY = 400;
+const ENEMYDELAY = 250;
 
 // varriables
 let grid;
 let level;
 let walkTime = 0;
 let digTime = 0;
+let enemyTime = 0;
 
 // classes
 class Character {
@@ -148,22 +150,33 @@ class Enemy {
   }
 
   move() {
-    let choice = random(100);
-    if (choice < 25) {
-      // up
-      this.y -= this.speed;
-    }
-    else if (choice < 50) {
-      // down
-      this.y += this.speed;
-    }
-    else if (choice < 75) {
-      // left
-      this.x -= this.speed;
-    }
-    else {
-      // right
-      this.x += this.speed;
+    if (millis() - enemyTime > ENEMYDELAY) {
+      enemyTime = millis();
+      let choice = random(100);
+      if (choice < 25) {
+        // up
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+          this.y -= this.speed;
+        }
+      }
+      else if (choice < 50) {
+        // down
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+          this.y += this.speed;
+        }
+      }
+      else if (choice < 75) {
+        // left
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+          this.x -= this.speed;
+        }
+      }
+      else {
+        // right
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+          this.x += this.speed;
+        }
+      }
     }
   }
 }
@@ -173,6 +186,7 @@ function preload() {
 }
 
 let taizo;
+let theEnemies = [];
 
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
@@ -184,9 +198,25 @@ function draw() {
   background(220);
   displayGrid();
 
+  // player
   taizo.attck();
   taizo.playerMove();
   taizo.display();
+
+  // enemy
+  for (let myEnemy of theEnemies) {
+    myEnemy.move();
+    myEnemy.display();
+  }
+}
+
+function mousePressed() {
+  spawnEnemy(21,6);
+}
+
+function spawnEnemy(x, y) {
+  let someEnemy = new Enemy(x, y, "orange");
+  theEnemies.push(someEnemy);
 }
 
 function displayGrid() {
