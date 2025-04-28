@@ -106,8 +106,8 @@ class Character {
 
   playerMove() {
     // movement that is specifically triggered and slower by digging new tunnels
-    if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && 
-    (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE ||grid[this.y][this.x+1] === DIGABLE ||grid[this.y+1][this.x+1] === DIGABLE)) {
+    if (this.x >= 0 && this.x < COLS - 1 && this.y >= 0 && this.y < ROWS - 1 && 
+    (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE || grid[this.y][this.x+1] === DIGABLE || grid[this.y+1][this.x+1] === DIGABLE)) {
       // slower digging delay
       if (millis() - digTime > DIGDELAY) {
         digTime = millis();
@@ -122,7 +122,8 @@ class Character {
     }
     
     // movement that is specifically triggered by walking in tunnels
-    else if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+    else if (this.x >= 0 && this.x < COLS - 1 && this.y >= 0 && this.y < ROWS - 1 && 
+      grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
       // faster tunnel delay
       if (millis() - walkTime > WALKDELAY) {
         walkTime = millis();
@@ -154,25 +155,25 @@ class Enemy {
       let choice = random(100);
       if (choice < 25) {
         // up
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
           this.y -= this.speed;
         }
       }
       else if (choice < 50) {
         // down
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
           this.y += this.speed;
         }
       }
       else if (choice < 75) {
         // left
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
           this.x -= this.speed;
         }
       }
       else {
         // right
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
+        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
           this.x += this.speed;
         }
       }
@@ -227,6 +228,10 @@ function displayGrid() {
       }
       else if (grid[y][x] === DIGABLE) {
         fill("black");
+        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
+      }
+      else if (grid[y][x] === ROCK) {
+        fill("grey");
         square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
       }
       else if (grid[y][x] === PUMP) {
