@@ -122,8 +122,7 @@ class Character {
     }
     
     // movement that is specifically triggered by walking in tunnels
-    else if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || 
-      this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === PLAYER) {
+    else if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY) {
       // faster tunnel delay
       if (millis() - walkTime > WALKDELAY) {
         walkTime = millis();
