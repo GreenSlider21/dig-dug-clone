@@ -105,8 +105,8 @@ class Character {
   }
 
   playerMove() {
-   // movement that is specifically triggered and slower by digging new tunnels
-   if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && 
+    // movement that is specifically triggered and slower by digging new tunnels
+    if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && 
     (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE ||grid[this.y][this.x+1] === DIGABLE ||grid[this.y+1][this.x+1] === DIGABLE)) {
       // slower digging delay
       if (millis() - digTime > DIGDELAY) {
@@ -124,12 +124,12 @@ class Character {
     // movement that is specifically triggered by walking in tunnels
     else if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || 
       this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === PLAYER) {
-        // faster tunnel delay
-        if (millis() - walkTime > WALKDELAY) {
-          walkTime = millis();
-          this.move();
-        }
+      // faster tunnel delay
+      if (millis() - walkTime > WALKDELAY) {
+        walkTime = millis();
+        this.move();
       }
+    }
   }
 }
 
