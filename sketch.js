@@ -18,14 +18,12 @@ const ROWS = 32;
 const COLS = 28;
 const WALKDELAY = 200;
 const DIGDELAY = 400;
-const ENEMYDELAY = 250;
 
 // varriables
 let grid;
 let level;
 let walkTime = 0;
 let digTime = 0;
-let enemyTime = 0;
 
 // classes
 class Character {
@@ -134,11 +132,13 @@ class Character {
 }
 
 class Enemy {
-  constructor(x, y, colour) {
+  constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.colour = colour;
+    this.colour = "orange";
     this.speed = 1;
+    this.delay = 250;
+    this.enemyTime = 0;
   }
 
   display() {
@@ -150,8 +150,8 @@ class Enemy {
   }
 
   move() {
-    if (millis() - enemyTime > ENEMYDELAY) {
-      enemyTime = millis();
+    if (millis() - this.enemyTime > this.delay) {
+      this.enemyTime = millis();
       let choice = random(100);
       if (choice < 25) {
         // up
@@ -187,6 +187,8 @@ function preload() {
 
 let taizo;
 let theEnemies = [];
+let xSpawns = [2, 21];
+let ySpawns = [9, 6];
 
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
@@ -211,11 +213,11 @@ function draw() {
 }
 
 function mousePressed() {
-  spawnEnemy(21,6);
+  spawnEnemy(xSpawns[1], ySpawns[1]);
 }
 
 function spawnEnemy(x, y) {
-  let someEnemy = new Enemy(x, y, "orange");
+  let someEnemy = new Enemy(x, y);
   theEnemies.push(someEnemy);
 }
 
@@ -229,30 +231,6 @@ function displayGrid() {
       else if (grid[y][x] === DIGABLE) {
         fill("black");
         square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
-      }
-      else if (grid[y][x] === ROCK) {
-        fill("grey");
-        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
-      }
-      else if (grid[y][x] === PUMP) {
-        fill("purple");
-        square(x * CELL_SIZE + 2, y * CELL_SIZE, CELL_SIZE);
-        square(x * CELL_SIZE + 3, y * CELL_SIZE, CELL_SIZE);
-        square(x * CELL_SIZE + 4, y * CELL_SIZE, CELL_SIZE);
-      }
-      else if (grid[y][x] === POOKA) {
-        fill("orange");
-        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
-        square(x * CELL_SIZE + 1, y * CELL_SIZE, CELL_SIZE);
-        square(x * CELL_SIZE, y * CELL_SIZE + 1, CELL_SIZE);
-        square(x * CELL_SIZE + 1, y * CELL_SIZE + 1, CELL_SIZE);
-      }
-      else if (grid[y][x] === FYGAR) {
-        fill("green");
-        square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
-        square(x * CELL_SIZE + 1, y * CELL_SIZE, CELL_SIZE);
-        square(x * CELL_SIZE, y * CELL_SIZE + 1, CELL_SIZE);
-        square(x * CELL_SIZE + 1, y * CELL_SIZE + 1, CELL_SIZE);
       }
     }
   }
