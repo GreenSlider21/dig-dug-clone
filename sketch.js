@@ -187,8 +187,8 @@ function preload() {
 
 let taizo;
 let theEnemies = [];
-let xSpawns = [2, 21];
-let ySpawns = [9, 6];
+let xSpawns = [2, 21, 7, 18];
+let ySpawns = [9, 6, 22, 24];
 
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
@@ -199,6 +199,7 @@ function setup() {
 function draw() {
   background(220);
   displayGrid();
+  // noStroke();
 
   // player
   taizo.attck();
@@ -213,7 +214,7 @@ function draw() {
 }
 
 function mousePressed() {
-  spawnEnemy(xSpawns[1], ySpawns[1]);
+  spawnEnemy(xSpawns[0], ySpawns[0]);
 }
 
 function spawnEnemy(x, y) {
