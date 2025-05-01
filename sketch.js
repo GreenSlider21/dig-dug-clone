@@ -104,8 +104,8 @@ class Character {
 
   playerMove() {
     // movement that is specifically triggered and slower by digging new tunnels
-    if (this.x >= 0 && this.x < COLS - 1 && this.y >= 0 && this.y < ROWS - 1 && 
-    (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE || grid[this.y][this.x+1] === DIGABLE || grid[this.y+1][this.x+1] === DIGABLE)) {
+    if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 &&
+       (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE || grid[this.y][this.x+1] === DIGABLE || grid[this.y+1][this.x+1] === DIGABLE)) {
       // slower digging delay
       if (millis() - digTime > DIGDELAY) {
         digTime = millis();
@@ -120,8 +120,8 @@ class Character {
     }
     
     // movement that is specifically triggered by walking in tunnels
-    else if (this.x >= 0 && this.x < COLS - 1 && this.y >= 0 && this.y < ROWS - 1 && 
-      grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
+    else if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 &&
+      (grid[this.y][this.x] === EMPTY && grid[this.y+1][this.x] === EMPTY && grid[this.y][this.x+1] === EMPTY && grid[this.y+1][this.x+1] === EMPTY)) {
       // faster tunnel delay
       if (millis() - walkTime > WALKDELAY) {
         walkTime = millis();
@@ -153,27 +153,22 @@ class Enemy {
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
       let choice = random(100);
-      if (choice < 25) {
-        // up
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
+      if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 &&
+      (grid[this.y][this.x] === EMPTY && grid[this.y+1][this.x] === EMPTY && grid[this.y][this.x+1] === EMPTY && grid[this.y+1][this.x+1] === EMPTY)){
+        if (choice < 25) {
+          // up
           this.y -= this.speed;
         }
-      }
-      else if (choice < 50) {
-        // down
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
+        else if (choice < 50) {
+          // down
           this.y += this.speed;
         }
-      }
-      else if (choice < 75) {
-        // left
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
+        else if (choice < 75) {
+          // left
           this.x -= this.speed;
         }
-      }
-      else {
-        // right
-        if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 && grid[this.y][this.x] === EMPTY || grid[this.y+1][this.x] === EMPTY || grid[this.y][this.x+1] === EMPTY || grid[this.y+1][this.x+1] === EMPTY) {
+        else {
+          // right
           this.x += this.speed;
         }
       }
@@ -214,7 +209,9 @@ function draw() {
 }
 
 function mousePressed() {
-  spawnEnemy(xSpawns[0], ySpawns[0]);
+  for (let i = 0; i < 4; i++){
+    spawnEnemy(xSpawns[i], ySpawns[i]);
+  }
 }
 
 function spawnEnemy(x, y) {
