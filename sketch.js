@@ -26,6 +26,7 @@ let walkTime = 0;
 let digTime = 0;
 
 // classes
+// the player character class
 class Character {
   constructor(x, y){
     this.x = x;
@@ -70,7 +71,7 @@ class Character {
   
       // Keeps the player within bounds
       if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
-         // do nothing if movement would go out of bounds
+        // do nothing if movement would go out of bounds
         return;
       }
     
@@ -131,6 +132,7 @@ class Character {
   }
 }
 
+// the enemy characters class
 class Enemy {
   constructor(x, y) {
     this.x = x;
@@ -161,20 +163,23 @@ class Enemy {
       if (choice < 25) {
         // up
         nextY -= this.speed;
-      } else if (choice < 50) {
+      } 
+      else if (choice < 50) {
         // down
         nextY += this.speed;
-      } else if (choice < 75) {
+      } 
+      else if (choice < 75) {
         // left
         nextX -= this.speed;
-      } else {
+      } 
+      else {
         // right
         nextX += this.speed;
       }
   
       // Keeps the enemies within bounds
       if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
-         // do nothing if movement would go out of bounds
+        // do nothing if movement would go out of bounds
         return;
       }
   
@@ -188,7 +193,7 @@ class Enemy {
 }
 
 function preload() {
-  level = loadJSON("level.json");
+  level = loadJSON("levelempty.json");
 }
 
 let taizo;
