@@ -36,7 +36,7 @@ class Character {
     this.attcking = false;
     this.facingDirection = "right";
   }
-
+  
   display() {
     fill(this.colour);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
@@ -46,32 +46,60 @@ class Character {
   }
   
   move() {
-    console.log(this.x, this.y, this.facingDirection);
-    // alows the player to move the four cardinal directions, but disallows diagnal movment
+    console.log(this.x, this.y, this.facingDirection, this.attcking);
+    let nextX = this.x;
+    let nextY = this.y;
+  
     if (this.attcking === false){
-      if (keyIsDown(87) === true) {
-        // move up
+      if (keyIsDown(87)) {
+        nextY -= this.speed;
         this.facingDirection = "up";
-        this.y -= this.speed;
       }
-      else if (keyIsDown(83) === true) {
-        // move down
+      else if (keyIsDown(83)) {
+        nextY += this.speed;
         this.facingDirection = "down";
-        this.y += this.speed;
       }
-      else if (keyIsDown(65) === true) {
-        // move left
+      else if (keyIsDown(65)) {
+        nextX -= this.speed;
         this.facingDirection = "left";
-        this.x -= this.speed;
       }
-      else if (keyIsDown(68) === true) {
-        // move right
+      else if (keyIsDown(68)) {
+        nextX += this.speed;
         this.facingDirection = "right";
-        this.x += this.speed;
+      }
+  
+      // Keeps the player within bounds
+      if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
+         // do nothing if movement would go out of bounds
+        return;
+      }
+    
+      // movement that is specifically triggered and slower by digging new tunnels
+      if (grid[nextY][nextX] === DIGABLE || grid[nextY+1][nextX] === DIGABLE || grid[nextY][nextX+1] === DIGABLE || grid[nextY+1][nextX+1] === DIGABLE) {
+        // slower digging delay
+        if (millis() - digTime > DIGDELAY) {
+          digTime = millis();
+          // deletes old tiles to make tunnels
+          grid[nextY][nextX] = EMPTY;
+          grid[nextY+1][nextX] = EMPTY;
+          grid[nextY][nextX+1] = EMPTY;
+          grid[nextY+1][nextX+1] = EMPTY;
+          this.x = nextX;
+          this.y = nextY;
+        }
+      }
+      // movement that is specifically triggered by walking in tunnels
+      else if (grid[nextY][nextX] === EMPTY && grid[nextY+1][nextX] === EMPTY && grid[nextY][nextX+1] === EMPTY && grid[nextY+1][nextX+1] === EMPTY) {
+        // faster tunnel delay
+        if (millis() - walkTime > WALKDELAY) {
+          walkTime = millis();
+          this.x = nextX;
+          this.y = nextY;
+        }
       }
     }
   }
-
+  
   attck() {
     if (keyIsDown(32) === true) {
       this.attcking = true;
@@ -101,34 +129,6 @@ class Character {
       this.attcking = false;
     }
   }
-
-  playerMove() {
-    // movement that is specifically triggered and slower by digging new tunnels
-    if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 &&
-       (grid[this.y][this.x] === DIGABLE || grid[this.y+1][this.x] === DIGABLE || grid[this.y][this.x+1] === DIGABLE || grid[this.y+1][this.x+1] === DIGABLE)) {
-      // slower digging delay
-      if (millis() - digTime > DIGDELAY) {
-        digTime = millis();
-        // deletes old tiles to make tunnels
-        grid[this.y][this.x] = EMPTY;
-        grid[this.y+1][this.x] = EMPTY;
-        grid[this.y][this.x+1] = EMPTY;
-        grid[this.y+1][this.x+1] = EMPTY;
-        
-        this.move();
-      }
-    }
-    
-    // movement that is specifically triggered by walking in tunnels
-    else if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 &&
-      (grid[this.y][this.x] === EMPTY && grid[this.y+1][this.x] === EMPTY && grid[this.y][this.x+1] === EMPTY && grid[this.y+1][this.x+1] === EMPTY)) {
-      // faster tunnel delay
-      if (millis() - walkTime > WALKDELAY) {
-        walkTime = millis();
-        this.move();
-      }
-    }
-  }
 }
 
 class Enemy {
@@ -152,25 +152,36 @@ class Enemy {
   move() {
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
+  
       let choice = random(100);
-      if (this.x >= 1 && this.x < COLS - 2 && this.y >= 1 && this.y < ROWS - 2 &&
-      (grid[this.y][this.x] === EMPTY && grid[this.y+1][this.x] === EMPTY && grid[this.y][this.x+1] === EMPTY && grid[this.y+1][this.x+1] === EMPTY)){
-        if (choice < 25) {
-          // up
-          this.y -= this.speed;
-        }
-        else if (choice < 50) {
-          // down
-          this.y += this.speed;
-        }
-        else if (choice < 75) {
-          // left
-          this.x -= this.speed;
-        }
-        else {
-          // right
-          this.x += this.speed;
-        }
+      let nextX = this.x;
+      let nextY = this.y;
+  
+      // temporary random direction picker
+      if (choice < 25) {
+        // up
+        nextY -= this.speed;
+      } else if (choice < 50) {
+        // down
+        nextY += this.speed;
+      } else if (choice < 75) {
+        // left
+        nextX -= this.speed;
+      } else {
+        // right
+        nextX += this.speed;
+      }
+  
+      // Keeps the enemies within bounds
+      if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
+         // do nothing if movement would go out of bounds
+        return;
+      }
+  
+      // Only move if all four grid spaces are empty
+      if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+        this.x = nextX;
+        this.y = nextY;
       }
     }
   }
@@ -198,7 +209,7 @@ function draw() {
 
   // player
   taizo.attck();
-  taizo.playerMove();
+  taizo.move();
   taizo.display();
 
   // enemy
