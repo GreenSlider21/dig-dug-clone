@@ -141,6 +141,8 @@ class Enemy {
     this.speed = 1;
     this.delay = 250;
     this.enemyTime = 0;
+    this.openSet = [];
+    this.closedSet = [];
   }
 
   display() {
