@@ -134,7 +134,7 @@ class Character {
 
 // the enemy characters class
 class Enemy {
-  constructor(x, y) {
+  constructor(x, y, playerX, playerY) {
     this.x = x;
     this.y = y;
     this.colour = "orange";
@@ -143,6 +143,8 @@ class Enemy {
     this.enemyTime = 0;
     this.openSet = [];
     this.closedSet = [];
+    this.start = {enemyX: this.x, enemyY: this.y,};
+    this.end = {playerX: this.x, playerY: this.y,};
   }
 
   display() {
@@ -154,6 +156,7 @@ class Enemy {
   }
 
   move() {
+    console.log(this.start, this.end);
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
   
@@ -189,6 +192,8 @@ class Enemy {
       if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
         this.x = nextX;
         this.y = nextY;
+        this.start.enemyX = nextX;
+        this.start.enemyY = nextY;
       }
     }
   }
@@ -233,7 +238,7 @@ function mousePressed() {
 }
 
 function spawnEnemy(x, y) {
-  let someEnemy = new Enemy(x, y);
+  let someEnemy = new Enemy(x, y, taizo.x, taizo.y);
   theEnemies.push(someEnemy);
 }
 
