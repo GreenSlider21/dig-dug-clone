@@ -156,7 +156,12 @@ class Enemy {
   }
 
   move() {
+  // Always update end with the current player position
+  this.end.playerX = taizo.x;
+  this.end.playerY = taizo.y;
+
     console.log(this.start, this.end);
+    
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
   
