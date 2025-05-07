@@ -137,14 +137,16 @@ class Enemy {
   constructor(x, y, playerX, playerY) {
     this.x = x;
     this.y = y;
+    this.start = {enemyX: this.x, enemyY: this.y,};
+    this.end = {playerX: this.x, playerY: this.y,};
     this.colour = "orange";
     this.speed = 1;
     this.delay = 250;
     this.enemyTime = 0;
     this.openSet = [];
+    // openSet starts with beginning node only
+    this.openSet.push(this.start);
     this.closedSet = [];
-    this.start = {enemyX: this.x, enemyY: this.y,};
-    this.end = {playerX: this.x, playerY: this.y,};
   }
 
   display() {
@@ -157,10 +159,10 @@ class Enemy {
 
   move() {
   // Always update end with the current player position
-  this.end.playerX = taizo.x;
-  this.end.playerY = taizo.y;
+    this.end.playerX = taizo.x;
+    this.end.playerY = taizo.y;
 
-    console.log(this.start, this.end);
+    console.log(this.openSet, this.end);
     
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
