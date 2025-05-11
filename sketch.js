@@ -143,10 +143,6 @@ class Enemy {
     this.speed = 1;
     this.delay = 250;
     this.enemyTime = 0;
-    this.openSet = [];
-    // openSet starts with beginning node only
-    this.openSet.push(this.start);
-    this.closedSet = [];
   }
 
   display() {
@@ -157,27 +153,10 @@ class Enemy {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
   }
 
-  heuristic() {
-    let d = Math.abs(a.i - b.i) + Math.abs(a.j - b.j);
-    return d;
-  }
-
-  removeFromArray() {
-    for (let y = grid.length - 1; y >= 0; y--) {
-      for (let x = grid.length - 1; x >= 0; x--) {
-        if (grid[y][x] === remove) {
-          grid.splice(grid[y][x], 1);
-        }
-      }
-    }
-  }
-
   move() {
   // Always update end with the current player position
     this.end.playerX = taizo.x;
     this.end.playerY = taizo.y;
-
-    // console.log(this.openSet, this.end);
     
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
@@ -218,6 +197,81 @@ class Enemy {
         this.start.enemyY = nextY;
       }
     }
+  }
+}
+
+function removeFromArray(arr, elt) {
+  for (let i = arr.length-1; i >= 0; i--){
+    if (arr[i] === elt) {
+      arr.splice(i, 1);
+    }
+  }
+}
+
+function Node(){
+  let nodeX = x;
+  let nodeY = y;
+  let g = 0;
+  let h = 0;
+  let f = 0;
+  let neighbors = [];
+}
+
+function addNeighbors(grid) {
+  let x = x;
+  let y = y;
+  if (y < COLS - 1) {
+    neighbors.push(grid[y+1][x]);
+  }
+  if (y > 0) {
+    neighbors.push(grid[y-1][x]);
+  }
+  if (x < ROWS - 1) {
+    neighbors.push(grid[y][x+1]);
+  }
+  if (x > 0) {
+    neighbors.push(grid[y][x-1]);
+  }
+
+  for (let i = 0; i < COLS; i++) {
+    for (let j = 0; j < ROWS; j++) {
+      grid[i][j].addNeighbors(grid);
+    }
+  }
+}
+
+function heuristic(a, b) {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function aStar() {
+  let openSet = [];
+  let closedSet = [];
+  let start = [y][x];
+  let end = [y][x];
+  // openSet starts with beginning node only
+  openSet.push(start);
+
+  if (openSet.length > 0) {
+    // keep going
+    let winner = 0;
+    for (let i = 0; i < openSet.length; i++) {
+      if (openSet[i].f < openSet[winner].f) {
+        winner = i;
+      }
+    }
+    let current = openSet[winner];
+
+    if (current === end) {
+      console.log("done");
+    }
+
+    removeFromArray(openSet, current);
+    closedSet.push(current);
+
+  }
+  else {
+    // no solution
   }
 }
 
