@@ -134,7 +134,7 @@ class Character {
 
 // the enemy characters class
 class Enemy {
-  constructor(x, y, playerX, playerY) {
+  constructor(x, y, playerX, playerY, j, i) {
     this.x = x;
     this.y = y;
     this.start = {enemyX: this.x, enemyY: this.y,};
@@ -145,16 +145,14 @@ class Enemy {
     this.enemyTime = 0;
     this.openSet = [];
     this.closedSet = [];
-    this.start = [enemyY][enemyX];
-    this.end = [playerY][playerX];
+    this.beginning = [this.start.enemyY][this.start.enemyX];
+    this.goal = [this.end.playerY][this.end.playerX];
     this.nodeX = j;
     this.nodeY = i;
     this.g = 0;
     this.h = 0;
     this.f = 0;
     this.neighbors = [];
-    // openSet starts with beginning node only
-    openSet.push(start);
   }
 
   display() {
@@ -166,6 +164,9 @@ class Enemy {
   }
 
   aStar() {
+    // openSet starts with beginning node only
+    openSet.push(start);
+
     if (openSet.length > 0) {
       // keep going
       let winner = 0;
