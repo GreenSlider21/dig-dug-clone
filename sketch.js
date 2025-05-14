@@ -134,7 +134,7 @@ class Character {
 
 // the enemy characters class
 class Enemy {
-  constructor(x, y, playerX, playerY, j, i) {
+  constructor(x, y, playerX, playerY, nodeX, nodeY) {
     this.x = x;
     this.y = y;
     this.start = {enemyX: this.x, enemyY: this.y,};
@@ -147,12 +147,14 @@ class Enemy {
     this.closedSet = [];
     this.beginning = [this.start.enemyY][this.start.enemyX];
     this.goal = [this.end.playerY][this.end.playerX];
-    this.nodeX = j;
-    this.nodeY = i;
+    this.nodeX = nodeX;
+    this.nodeY = nodeY;
     this.g = 0;
     this.h = 0;
     this.f = 0;
     this.neighbors = [];
+    this.previous = undefined;
+    this.path = [];
   }
 
   display() {
@@ -163,27 +165,61 @@ class Enemy {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
   }
 
+  heuristic(a, b) {
+    let d = dist(a.i,a.j, b.i, b.j);
+    return d;
+  }
+
   aStar() {
     // openSet starts with beginning node only
-    openSet.push(start);
+    this.openSet.push(this.start);
 
-    if (openSet.length > 0) {
+    if (this.openSet.length > 0) {
       // keep going
       let winner = 0;
-      for (let i = 0; i < openSet.length; i++) {
-        if (openSet[i].f < openSet[winner].f) {
+      for (let i = 0; i < this.openSet.length; i++) {
+        if (this.openSet[i].f < this.openSet[winner].f) {
           winner = i;
         }
       }
-      let current = openSet[winner];
+      let current = this.openSet[winner];
     
       if (current === end) {
+        let temp = current;
+        this.path.push(temp);
+        while (temp.previous);
+        temp = temp.previous;
         console.log("done");
       }
     
-      removeFromArray(openSet, current);
-      closedSet.push(current);
+      removeFromArray(this.openSet, current);
+      this.closedSet.push(current);
     
+      let neighbors = current.neighbors;
+      for (let i = 0; i < neighbors.length; i++) {
+        let neighbor = neighbors[i];
+
+        if (!this.closedSet.includes(neighbor)) {
+          let tempG = current.g +1
+
+          if (this.openSet.includes(neighbor)) {
+            if (tempG < neighbor.g) {
+              neighbor.g = tempG;
+            }
+          }
+          else {
+            neighbor.g = tempG;
+            this.openSet.push(neighbor);
+          }
+
+          neighbor.h = heuristic(neighbor, end);
+          neighbor.f = neighbor.g + neighbor.h;
+          neighbor.previous = current;
+
+        }
+
+        neighbor.g = current.g = 1;
+      }
     }
     else {
       // no solution
@@ -191,20 +227,20 @@ class Enemy {
   }
   
   addNeighbors(grid) {
-    let x = x;
-    let y = y;
+    let i = i;
+    let j = j;
 
-    if (y < COLS - 1) {
-      neighbors.push(grid[y+1][x]);
+    if (j < COLS - 1) {
+      this.neighbors.push(grid[j+1][i]);
     }
-    if (y > 0) {
-      neighbors.push(grid[y-1][x]);
+    if (j > 0) {
+      this.neighbors.push(grid[j-1][i]);
     }
-    if (x < ROWS - 1) {
-      neighbors.push(grid[y][x+1]);
+    if (i < ROWS - 1) {
+      this.neighbors.push(grid[j][i+1]);
     }
-    if (x > 0) {
-      neighbors.push(grid[y][x-1]);
+    if (i > 0) {
+      this.neighbors.push(grid[j][i-1]);
     }
 
     for (let i = 0; i < COLS; i++) {
