@@ -4,6 +4,8 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
+// https://editor.p5js.org/codingtrain/sketches/ehLjdFpat
+// https://github.com/CodeAltus/Snake-AI/blob/main/search.js
 
 // constants
 const EMPTY = 0;
@@ -187,8 +189,9 @@ class Enemy {
       if (current === end) {
         let temp = current;
         this.path.push(temp);
-        while (temp.previous);
-        temp = temp.previous;
+        while (temp.previous) {
+          temp = temp.previous;
+        }
         console.log("done");
       }
     
@@ -200,7 +203,7 @@ class Enemy {
         let neighbor = neighbors[i];
 
         if (!this.closedSet.includes(neighbor)) {
-          let tempG = current.g +1
+          let tempG = current.g +1;
 
           if (this.openSet.includes(neighbor)) {
             if (tempG < neighbor.g) {
