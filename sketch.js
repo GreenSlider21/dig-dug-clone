@@ -144,10 +144,10 @@ class Enemy {
     this.speed = 1;
     this.delay = 250;
     this.enemyTime = 0;
-    this.openSet = [];
-    this.closedSet = [];
-    this.beginning = [this.start.enemyY][this.start.enemyX];
-    this.goal = [this.end.playerY][this.end.playerX];
+    // this.openSet = [];
+    // this.closedSet = [];
+    // this.beginning = [this.start.enemyY][this.start.enemyX];
+    // this.goal = [this.end.playerY][this.end.playerX];
     // this.nodeX = nodeX;
     // this.nodeY = nodeY;
     // this.g = 0;
@@ -272,22 +272,22 @@ class Enemy {
       let nextY = this.y;
       
       // temporary random direction picker
-      // if (choice < 25) {
-      //   // up
-      //   nextY -= this.speed;
-      // } 
-      // else if (choice < 50) {
-      //   // down
-      //   nextY += this.speed;
-      // } 
-      // else if (choice < 75) {
-      //   // left
-      //   nextX -= this.speed;
-      // } 
-      // else {
-      //   // right
-      //   nextX += this.speed;
-      // }
+      if (this.end.playerY < this.y) {
+        // up
+        nextY -= this.speed;
+      } 
+      else if (this.end.playerY > this.y) {
+        // down
+        nextY += this.speed;
+      } 
+      if (this.end.playerX < this.x) {
+        // left
+        nextX -= this.speed;
+      } 
+      else if (this.end.playerX > this.x) {
+        // right
+        nextX += this.speed;
+      }
   
       // Keeps the enemies within bounds
       if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
