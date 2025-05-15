@@ -4,7 +4,6 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-// https://editor.p5js.org/cmorgantywls/sketches/UnorUUwVJ
 
 // constants
 const EMPTY = 0;
@@ -144,18 +143,6 @@ class Enemy {
     this.speed = 1;
     this.delay = 250;
     this.enemyTime = 0;
-    // this.openSet = [];
-    // this.closedSet = [];
-    // this.beginning = [this.start.enemyY][this.start.enemyX];
-    // this.goal = [this.end.playerY][this.end.playerX];
-    // this.nodeX = nodeX;
-    // this.nodeY = nodeY;
-    // this.g = 0;
-    // this.h = 0;
-    // this.f = 0;
-    // this.neighbors = [];
-    // this.previous = undefined;
-    // this.path = [];
   }
 
   display() {
@@ -165,99 +152,6 @@ class Enemy {
     square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
   }
-
-  // heuristic(a, b) {
-  //   let d = dist(a.i,a.j, b.i, b.j);
-  //   return d;
-  // }
-
-  // aStar() {
-  //   // openSet starts with beginning node only
-  //   this.openSet.push(this.start);
-
-  //   if (this.openSet.length > 0) {
-  //     // keep going
-  //     let winner = 0;
-  //     for (let i = 0; i < this.openSet.length; i++) {
-  //       if (this.openSet[i].f < this.openSet[winner].f) {
-  //         winner = i;
-  //       }
-  //     }
-  //     let current = this.openSet[winner];
-    
-  //     if (current === end) {
-  //       let temp = current;
-  //       this.path.push(temp);
-  //       while (temp.previous);
-  //       temp = temp.previous;
-  //       console.log("done");
-  //     }
-    
-  //     removeFromArray(this.openSet, current);
-  //     this.closedSet.push(current);
-    
-  //     let neighbors = current.neighbors;
-  //     for (let i = 0; i < neighbors.length; i++) {
-  //       let neighbor = neighbors[i];
-
-  //       if (!this.closedSet.includes(neighbor)) {
-  //         let tempG = current.g +1
-
-  //         if (this.openSet.includes(neighbor)) {
-  //           if (tempG < neighbor.g) {
-  //             neighbor.g = tempG;
-  //           }
-  //         }
-  //         else {
-  //           neighbor.g = tempG;
-  //           this.openSet.push(neighbor);
-  //         }
-
-  //         neighbor.h = heuristic(neighbor, end);
-  //         neighbor.f = neighbor.g + neighbor.h;
-  //         neighbor.previous = current;
-
-  //       }
-
-  //       neighbor.g = current.g = 1;
-  //     }
-  //   }
-  //   else {
-  //     // no solution
-  //   }  
-  // }
-  
-  // addNeighbors(grid) {
-  //   let i = i;
-  //   let j = j;
-
-  //   if (j < COLS - 1) {
-  //     this.neighbors.push(grid[j+1][i]);
-  //   }
-  //   if (j > 0) {
-  //     this.neighbors.push(grid[j-1][i]);
-  //   }
-  //   if (i < ROWS - 1) {
-  //     this.neighbors.push(grid[j][i+1]);
-  //   }
-  //   if (i > 0) {
-  //     this.neighbors.push(grid[j][i-1]);
-  //   }
-
-  //   for (let i = 0; i < COLS; i++) {
-  //     for (let j = 0; j < ROWS; j++) {
-  //       grid[i][j].addNeighbors(grid);
-  //     }
-  //   }
-  // }
-
-  // removeFromArray(arr, elt) {
-  //   for (let i = arr.length-1; i >= 0; i--){
-  //     if (arr[i] === elt) {
-  //       arr.splice(i, 1);
-  //     }
-  //   }
-  // }
 
   move() {
   // Always update end with the current player position
@@ -271,20 +165,20 @@ class Enemy {
       let nextX = this.x;
       let nextY = this.y;
       
-      // temporary random direction picker
+      // L* pathfinding 
       if (this.end.playerY < this.y) {
         // up
         nextY -= this.speed;
       } 
-      else if (this.end.playerY > this.y) {
+      if (this.end.playerY > this.y) {
         // down
         nextY += this.speed;
-      } 
+      }
       if (this.end.playerX < this.x) {
         // left
         nextX -= this.speed;
       } 
-      else if (this.end.playerX > this.x) {
+      if (this.end.playerX > this.x) {
         // right
         nextX += this.speed;
       }
@@ -307,7 +201,7 @@ class Enemy {
 }
 
 function preload() {
-  level = loadJSON("levelempty.json");
+  level = loadJSON("level.json");
 }
 
 let taizo;
