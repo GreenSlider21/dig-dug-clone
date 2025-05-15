@@ -4,6 +4,8 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
+// https://editor.p5js.org/codingtrain/sketches/ehLjdFpat
+// https://github.com/CodeAltus/Snake-AI/blob/main/search.js
 
 // constants
 const EMPTY = 0;
@@ -101,7 +103,7 @@ class Character {
     }
   }
   
-  attck() {
+  attack() {
     if (keyIsDown(32) === true) {
       this.attcking = true;
       fill(this.pumpColour);
@@ -326,7 +328,7 @@ function draw() {
   // noStroke();
 
   // player
-  taizo.attck();
+  taizo.attack();
   taizo.move();
   taizo.display();
 
