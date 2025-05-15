@@ -4,8 +4,7 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-// https://editor.p5js.org/codingtrain/sketches/ehLjdFpat
-// https://github.com/CodeAltus/Snake-AI/blob/main/search.js
+// https://editor.p5js.org/cmorgantywls/sketches/UnorUUwVJ
 
 // constants
 const EMPTY = 0;
@@ -103,7 +102,7 @@ class Character {
     }
   }
   
-  attack() {
+  attck() {
     if (keyIsDown(32) === true) {
       this.attcking = true;
       fill(this.pumpColour);
@@ -273,22 +272,22 @@ class Enemy {
       let nextY = this.y;
       
       // temporary random direction picker
-      if (choice < 25) {
-        // up
-        nextY -= this.speed;
-      } 
-      else if (choice < 50) {
-        // down
-        nextY += this.speed;
-      } 
-      else if (choice < 75) {
-        // left
-        nextX -= this.speed;
-      } 
-      else {
-        // right
-        nextX += this.speed;
-      }
+      // if (choice < 25) {
+      //   // up
+      //   nextY -= this.speed;
+      // } 
+      // else if (choice < 50) {
+      //   // down
+      //   nextY += this.speed;
+      // } 
+      // else if (choice < 75) {
+      //   // left
+      //   nextX -= this.speed;
+      // } 
+      // else {
+      //   // right
+      //   nextX += this.speed;
+      // }
   
       // Keeps the enemies within bounds
       if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
@@ -328,7 +327,7 @@ function draw() {
   // noStroke();
 
   // player
-  taizo.attack();
+  taizo.attck();
   taizo.move();
   taizo.display();
 
