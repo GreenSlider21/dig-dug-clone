@@ -76,7 +76,8 @@ class Character {
       }
     
       // movement that is specifically triggered and slower by digging new tunnels
-      if (grid[nextY][nextX] === DIGABLE || grid[nextY+1][nextX] === DIGABLE || grid[nextY][nextX+1] === DIGABLE || grid[nextY+1][nextX+1] === DIGABLE) {
+      if (grid[nextY][nextX] === DIGABLE || grid[nextY+1][nextX] === DIGABLE 
+        || grid[nextY][nextX+1] === DIGABLE || grid[nextY+1][nextX+1] === DIGABLE) {
         // slower digging delay
         if (millis() - digTime > DIGDELAY) {
           digTime = millis();
@@ -90,7 +91,8 @@ class Character {
         }
       }
       // movement that is specifically triggered by walking in tunnels
-      else if (grid[nextY][nextX] === EMPTY && grid[nextY+1][nextX] === EMPTY && grid[nextY][nextX+1] === EMPTY && grid[nextY+1][nextX+1] === EMPTY) {
+      else if (grid[nextY][nextX] === EMPTY && grid[nextY+1][nextX] === EMPTY 
+        && grid[nextY][nextX+1] === EMPTY && grid[nextY+1][nextX+1] === EMPTY) {
         // faster tunnel delay
         if (millis() - walkTime > WALKDELAY) {
           walkTime = millis();
@@ -137,11 +139,10 @@ class Enemy {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.start = {enemyX: this.x, enemyY: this.y,};
     this.end = {playerX: this.x, playerY: this.y,};
     this.colour = "orange";
     this.speed = 1;
-    this.delay = 250;
+    this.delay = 300;
     this.enemyTime = 0;
   }
 
@@ -188,13 +189,17 @@ class Enemy {
         // do nothing if movement would go out of bounds
         return;
       }
+
+      // if (grid[nextY][nextX] !== EMPTY && grid[nextY + 1][nextX] !== EMPTY 
+      //   && grid[nextY][nextX + 1] !== EMPTY && grid[nextY + 1][nextX + 1] !== EMPTY) {
+      //   nextX -= this.speed;
+      // }
   
       // Only move if all four grid spaces are empty
-      if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+      if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
+        && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
         this.x = nextX;
         this.y = nextY;
-        this.start.enemyX = nextX;
-        this.start.enemyY = nextY;
       }
     }
   }
