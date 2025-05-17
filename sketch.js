@@ -142,7 +142,7 @@ class Enemy {
     this.end = {playerX: this.x, playerY: this.y,};
     this.colour = "orange";
     this.speed = 1;
-    this.delay = 300;
+    this.delay = 350;
     this.enemyTime = 0;
   }
 
@@ -155,51 +155,52 @@ class Enemy {
   }
 
   move() {
-  // Always update end with the current player position
+    // Always update end with the current player position
     this.end.playerX = taizo.x;
     this.end.playerY = taizo.y;
     
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
-  
-      let choice = random(100);
-      let nextX = this.x;
-      let nextY = this.y;
       
-      // L* pathfinding 
+      let directions = [];
+
+      //L* pathfinding 
       if (this.end.playerY < this.y) {
         // up
-        nextY -= this.speed;
-      } 
+        directions.push({x: 0, y: -1});
+      }
       if (this.end.playerY > this.y) {
         // down
-        nextY += this.speed;
+        directions.push({x: 0, y: 1});
       }
       if (this.end.playerX < this.x) {
         // left
-        nextX -= this.speed;
+        directions.push({x: -1, y: 0});
       } 
       if (this.end.playerX > this.x) {
         // right
-        nextX += this.speed;
+        directions.push({x: 1, y: 0});
       }
-  
-      // Keeps the enemies within bounds
-      if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
-        // do nothing if movement would go out of bounds
-        return;
-      }
+    
+      for (let dir of directions) {
+        let nextX = this.x + dir.x;
+        let nextY = this.y + dir.y;
 
-      // if (grid[nextY][nextX] !== EMPTY && grid[nextY + 1][nextX] !== EMPTY 
-      //   && grid[nextY][nextX + 1] !== EMPTY && grid[nextY + 1][nextX + 1] !== EMPTY) {
-      //   nextX -= this.speed;
-      // }
-  
-      // Only move if all four grid spaces are empty
-      if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
-        && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
-        this.x = nextX;
-        this.y = nextY;
+        console.log(this.x, this.y);
+        console.log(nextX, nextY);
+    
+        // Keeps the enemies within bounds
+        if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
+          // do nothing if movement would go out of bounds
+          return;
+        }
+    
+        // Only move if all four grid spaces are empty
+        if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
+          && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+          this.x = nextX;
+          this.y = nextY;
+        }
       }
     }
   }
