@@ -144,6 +144,8 @@ class Enemy {
     this.speed = 1;
     this.delay = 350;
     this.enemyTime = 0;
+    this.ghost;
+    this.ghosting;
   }
 
   display() {
@@ -161,10 +163,35 @@ class Enemy {
     
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
+
+      if (grid[this.y][this.x] !== EMPTY || grid[this.y + 1][this.x] !== EMPTY 
+          || grid[this.y][this.x + 1] !== EMPTY || grid[this.y + 1][this.x + 1] !== EMPTY) {
+            this.ghosting = true;
+          }
+
+      else {
+        this.ghosting = false;
+      }
+
+      let gamble;
       
-      let directions = [];
+      if (this.ghosting === false){
+        gamble = Math.floor(random(100));
+      }
+      
+      if (gamble <= 1 || this.ghosting === true) {
+        this.ghost = true;
+      } 
+      else {
+        this.ghost = false
+      }
+      
+      console.log(this.ghost, this.ghosting, gamble);
 
       //L* pathfinding 
+
+      let directions = [];
+      
       if (this.end.playerY < this.y) {
         // up
         directions.push({x: 0, y: -1});
@@ -186,8 +213,8 @@ class Enemy {
         let nextX = this.x + dir.x;
         let nextY = this.y + dir.y;
 
-        console.log(this.x, this.y);
-        console.log(nextX, nextY);
+        // console.log(this.x, this.y);
+        // console.log(nextX, nextY);
     
         // Keeps the enemies within bounds
         if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
@@ -196,8 +223,14 @@ class Enemy {
         }
     
         // Only move if all four grid spaces are empty
-        if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
-          && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+        if (this.ghost === false) {
+          if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
+            && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+            this.x = nextX;
+            this.y = nextY;
+          }
+        }
+        else {
           this.x = nextX;
           this.y = nextY;
         }
