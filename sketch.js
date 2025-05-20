@@ -166,8 +166,8 @@ class Enemy {
 
       if (grid[this.y][this.x] !== EMPTY || grid[this.y + 1][this.x] !== EMPTY 
           || grid[this.y][this.x + 1] !== EMPTY || grid[this.y + 1][this.x + 1] !== EMPTY) {
-            this.ghosting = true;
-          }
+        this.ghosting = true;
+      }
 
       else {
         this.ghosting = false;
@@ -183,7 +183,7 @@ class Enemy {
         this.ghost = true;
       } 
       else {
-        this.ghost = false
+        this.ghost = false;
       }
       
       console.log(this.ghost, this.ghosting, gamble);
