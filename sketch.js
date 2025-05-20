@@ -142,7 +142,7 @@ class Enemy {
     this.end = {playerX: this.x, playerY: this.y,};
     this.colour = "orange";
     this.speed = 1;
-    this.delay = 350;
+    this.delay = 2500;
     this.enemyTime = 0;
     this.ghost;
     this.ghosting;
@@ -185,8 +185,6 @@ class Enemy {
       else {
         this.ghost = false;
       }
-      
-      console.log(this.ghost, this.ghosting, gamble);
 
       //L* pathfinding 
 
@@ -208,13 +206,48 @@ class Enemy {
         // right
         directions.push({x: 1, y: 0});
       }
+
+      // this.x === this.end.playerX && this.y === this.end.playerY
+
+      if (this.x === this.end.playerX + 1 && this.y === this.end.playerY || 
+          this.x === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
+          this.x === this.end.playerX && this.y === this.end.playerY + 1 ||
+
+          this.x + 1 === this.end.playerX && this.y === this.end.playerY ||
+          this.x + 1 === this.end.playerX && this.y === this.end.playerY + 1 ||
+        
+          this.x === this.end.playerX && this.y + 1 === this.end.playerY ||
+          this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
+
+          this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) {
+        console.log("guh!");
+      }
+
+      // if (this.x === this.end.playerX && this.y === this.end.playerY || 
+      //     this.x === this.end.playerX + 1 && this.y === this.end.playerY ||
+      //     this.x === this.end.playerX && this.y === this.end.playerY + 1 ||
+      //     this.x === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
+
+      //     this.x + 1 === this.end.playerX && this.y === this.end.playerY || 
+      //     this.x + 1 === this.end.playerX + 1 && this.y === this.end.playerY ||
+      //     this.x + 1 === this.end.playerX && this.y === this.end.playerY + 1 ||
+      //     this.x + 1 === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
+        
+      //     this.x === this.end.playerX && this.y + 1 === this.end.playerY || 
+      //     this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
+      //     this.x === this.end.playerX && this.y + 1 === this.end.playerY + 1 ||
+      //     this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY + 1 ||
+
+      //     this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY || 
+      //     this.x + 1 === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
+      //     this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY + 1 ||
+      //     this.x + 1 === this.end.playerX + 1 && this.y + 1 === this.end.playerY + 1) {
+      //   console.log("guh!");
+      // }
     
       for (let dir of directions) {
         let nextX = this.x + dir.x;
         let nextY = this.y + dir.y;
-
-        // console.log(this.x, this.y);
-        // console.log(nextX, nextY);
     
         // Keeps the enemies within bounds
         if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
