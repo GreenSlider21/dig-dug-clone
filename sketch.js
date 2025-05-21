@@ -139,13 +139,14 @@ class Enemy {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.end = {playerX: this.x, playerY: this.y,};
+    this.end = {playerX: this.x, playerY: this.y};
     this.colour = "orange";
     this.speed = 1;
     this.delay = 2500;
     this.enemyTime = 0;
     this.ghost;
     this.ghosting;
+    this.playerDirection = "right";
   }
 
   display() {
@@ -154,6 +155,62 @@ class Enemy {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+  }
+
+  hitDetection() {
+    // covers all the posibilities in minimal lines to see if the enemy touched the player
+    if ((this.x === this.end.playerX && this.y === this.end.playerY) ||
+        (this.x === this.end.playerX + 1 && this.y === this.end.playerY) || 
+        (this.x === this.end.playerX + 1 && this.y === this.end.playerY + 1) ||
+        (this.x === this.end.playerX && this.y === this.end.playerY + 1) ||
+    
+        (this.x + 1 === this.end.playerX && this.y === this.end.playerY) ||
+        (this.x + 1 === this.end.playerX && this.y === this.end.playerY + 1) ||
+    
+        (this.x === this.end.playerX && this.y + 1 === this.end.playerY) ||
+        (this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY) ||
+    
+        (this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY)) {
+      console.log("GOKU IS HIT! TAKE COVER! - Darth Vader");
+    }
+
+    // taking the player direction of attack
+    if (keyIsDown(87)) {
+        this.playerDirection = "up";
+      }
+      else if (keyIsDown(83)) {
+        this.playerDirection = "down";
+      }
+      else if (keyIsDown(65)) {
+        this.playerDirection = "left";
+      }
+      else if (keyIsDown(68)) {
+        this.playerDirection = "right";
+      }
+
+    // detecing if the enemy is hit by the player attack
+    if (keyIsDown(32) === true) {
+      if (this.playerDirection === "up" &&
+         ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
+         (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
+          console.log("Hit Up");
+      }
+      else if (this.playerDirection === "down" &&
+         ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
+         (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
+          console.log("Hit Down");
+      }
+      else if (this.playerDirection === "left" &&
+         ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
+         (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
+          console.log("Hit Left");
+      }
+      else if (this.playerDirection === "right" &&
+         ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
+         (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
+          console.log("Hit Right");
+      }
+    }
   }
 
   move() {
@@ -207,44 +264,6 @@ class Enemy {
         directions.push({x: 1, y: 0});
       }
 
-      // this.x === this.end.playerX && this.y === this.end.playerY
-
-      if (this.x === this.end.playerX + 1 && this.y === this.end.playerY || 
-          this.x === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
-          this.x === this.end.playerX && this.y === this.end.playerY + 1 ||
-
-          this.x + 1 === this.end.playerX && this.y === this.end.playerY ||
-          this.x + 1 === this.end.playerX && this.y === this.end.playerY + 1 ||
-        
-          this.x === this.end.playerX && this.y + 1 === this.end.playerY ||
-          this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
-
-          this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) {
-        console.log("guh!");
-      }
-
-      // if (this.x === this.end.playerX && this.y === this.end.playerY || 
-      //     this.x === this.end.playerX + 1 && this.y === this.end.playerY ||
-      //     this.x === this.end.playerX && this.y === this.end.playerY + 1 ||
-      //     this.x === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
-
-      //     this.x + 1 === this.end.playerX && this.y === this.end.playerY || 
-      //     this.x + 1 === this.end.playerX + 1 && this.y === this.end.playerY ||
-      //     this.x + 1 === this.end.playerX && this.y === this.end.playerY + 1 ||
-      //     this.x + 1 === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
-        
-      //     this.x === this.end.playerX && this.y + 1 === this.end.playerY || 
-      //     this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
-      //     this.x === this.end.playerX && this.y + 1 === this.end.playerY + 1 ||
-      //     this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY + 1 ||
-
-      //     this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY || 
-      //     this.x + 1 === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
-      //     this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY + 1 ||
-      //     this.x + 1 === this.end.playerX + 1 && this.y + 1 === this.end.playerY + 1) {
-      //   console.log("guh!");
-      // }
-    
       for (let dir of directions) {
         let nextX = this.x + dir.x;
         let nextY = this.y + dir.y;
@@ -301,6 +320,7 @@ function draw() {
   for (let myEnemy of theEnemies) {
     myEnemy.move();
     myEnemy.display();
+    myEnemy.hitDetection();
   }
 }
 
