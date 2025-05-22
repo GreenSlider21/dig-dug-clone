@@ -164,6 +164,13 @@ class Enemy {
     this.health = 3;
   }
 
+  poitionReset() {
+    if (playerHit === true) {
+      this.x = this.originalX;
+      this.y = this.originalY;
+    }
+  }
+
   display() {
     fill(this.colour);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
@@ -193,11 +200,6 @@ class Enemy {
         this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) {
       console.log("GUH!");
       playerHit = true;
-    }
-
-    if (playerHit === true) {
-      this.x = this.originalX;
-      this.y = this.originalY;
     }
 
     // taking the player direction of attack
@@ -345,9 +347,10 @@ function draw() {
 
   // enemy
   for (let myEnemy of theEnemies) {
+    myEnemy.poitionReset();
+    myEnemy.hitDetection();
     myEnemy.move();
     myEnemy.display();
-    myEnemy.hitDetection();
   }
 }
 
