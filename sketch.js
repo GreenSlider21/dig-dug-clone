@@ -8,11 +8,6 @@
 // constants
 const EMPTY = 0;
 const DIGABLE = 1;
-const ROCK = 2;
-const PUMP = 3;
-const FYGAR = 7;
-const POOKA = 8;
-const PLAYER = 9;
 const CELL_SIZE = 20;
 const ROWS = 32;
 const COLS = 28;
@@ -24,6 +19,8 @@ let grid;
 let level;
 let walkTime = 0;
 let digTime = 0;
+let hurtTime = 0;
+let playerHit = false;
 
 // classes
 // the player character class
@@ -36,6 +33,8 @@ class Character {
     this.pumpColour = "purple";
     this.attcking = false;
     this.facingDirection = "right";
+    this.lives = 3;
+    this.hurtDelay = 2000;
   }
   
   display() {
@@ -44,6 +43,19 @@ class Character {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+    console.log(this.lives);
+  }
+
+  hurt() {
+    if (playerHit === true) {
+      if (millis() - hurtTime > this.hurtDelay) {
+        hurtTime = millis();
+        this.lives -= 1;
+        this.x = 12;
+        this.y = 16;
+        playerHit = false;
+      }
+    }
   }
   
   move() {
@@ -139,6 +151,8 @@ class Enemy {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.originalX = x;
+    this.originalY = y;
     this.end = {playerX: this.x, playerY: this.y};
     this.colour = "orange";
     this.speed = 1;
@@ -147,6 +161,7 @@ class Enemy {
     this.ghost;
     this.ghosting;
     this.playerDirection = "right";
+    this.health = 3;
   }
 
   display() {
@@ -158,6 +173,11 @@ class Enemy {
   }
 
   hitDetection() {
+    // Always update end with the current player position
+    this.end.playerX = taizo.x;
+    this.end.playerY = taizo.y;
+    console.log(this.health);
+
     // covers all the posibilities in minimal lines to see if the enemy touched the player
     if (this.x === this.end.playerX && this.y === this.end.playerY ||
         this.x === this.end.playerX + 1 && this.y === this.end.playerY || 
@@ -172,6 +192,12 @@ class Enemy {
     
         this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) {
       console.log("GUH!");
+      playerHit = true;
+    }
+
+    if (playerHit === true) {
+      this.x = this.originalX;
+      this.y = this.originalY;
     }
 
     // taking the player direction of attack
@@ -194,30 +220,30 @@ class Enemy {
          ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
          (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
         console.log("Hit Up");
+        this.health -= 1;
       }
       else if (this.playerDirection === "down" &&
          ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
          (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
         console.log("Hit Down");
+        this.health -= 1;      
       }
       else if (this.playerDirection === "left" &&
          ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
          (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
         console.log("Hit Left");
+        this.health -= 1;        
       }
       else if (this.playerDirection === "right" &&
          ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
          (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
         console.log("Hit Right");
+        this.health -= 1;        
       }
     }
   }
 
-  move() {
-    // Always update end with the current player position
-    this.end.playerX = taizo.x;
-    this.end.playerY = taizo.y;
-    
+  move() {    
     if (millis() - this.enemyTime > this.delay) {
       this.enemyTime = millis();
 
@@ -315,6 +341,7 @@ function draw() {
   taizo.attck();
   taizo.move();
   taizo.display();
+  taizo.hurt();
 
   // enemy
   for (let myEnemy of theEnemies) {
@@ -325,7 +352,7 @@ function draw() {
 }
 
 function mousePressed() {
-  for (let i = 0; i < 4; i++){
+  for (let i = 0; i < 4; i++) {
     spawnEnemy(xSpawns[i], ySpawns[i]);
   }
 }
