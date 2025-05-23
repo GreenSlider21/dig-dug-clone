@@ -53,6 +53,11 @@ class Character {
         this.lives -= 1;
         this.x = 12;
         this.y = 16;
+        let enemiesClone = structuredClone(theEnemies);
+        theEnemies.slice(theEnemies.length);
+        for (let i = 0; i < enemiesClone.length; i++) {
+          spawnEnemy(xSpawns[i], ySpawns[i]);
+        }
         playerHit = false;
       }
     }
@@ -151,8 +156,6 @@ class Enemy {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.originalX = x;
-    this.originalY = y;
     this.end = {playerX: this.x, playerY: this.y};
     this.colour = "orange";
     this.speed = 1;
@@ -162,13 +165,6 @@ class Enemy {
     this.ghosting;
     this.playerDirection = "right";
     this.health = 3;
-  }
-
-  poitionReset() {
-    if (playerHit === true) {
-      this.x = this.originalX;
-      this.y = this.originalY;
-    }
   }
 
   display() {
@@ -347,7 +343,6 @@ function draw() {
 
   // enemy
   for (let myEnemy of theEnemies) {
-    myEnemy.poitionReset();
     myEnemy.hitDetection();
     myEnemy.move();
     myEnemy.display();
