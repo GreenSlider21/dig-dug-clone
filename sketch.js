@@ -21,6 +21,7 @@ let walkTime = 0;
 let digTime = 0;
 let hurtTime = 0;
 let playerHit = false;
+let gameState = "play";
 
 // classes
 // the player character class
@@ -34,7 +35,7 @@ class Character {
     this.attcking = false;
     this.facingDirection = "right";
     this.lives = 3;
-    this.hurtDelay = 2000;
+    this.hurtDelay = 200;
   }
   
   display() {
@@ -54,12 +55,21 @@ class Character {
         this.x = 12;
         this.y = 16;
         let enemiesClone = structuredClone(theEnemies);
-        theEnemies.slice(theEnemies.length);
+        theEnemies.length = 0;
         for (let i = 0; i < enemiesClone.length; i++) {
           spawnEnemy(xSpawns[i], ySpawns[i]);
         }
         playerHit = false;
       }
+    }
+  }
+
+  gameOver() {
+    if (this.lives > 0) {
+      gameState = "play"
+    }
+    else {
+      gameState = "game over"
     }
   }
   
@@ -331,29 +341,47 @@ function setup() {
 }
 
 function draw() {
+  // console.log(theEnemies);
   background(220);
   displayGrid();
   // noStroke();
+  if (theEnemies.length < 4) {
+    enemySpawner();
+  }
+  
+  if (gameState === "play") {
+    // player
+    taizo.gameOver();
+    taizo.attck();
+    taizo.move();
+    taizo.display();
+    taizo.hurt();
 
-  // player
-  taizo.attck();
-  taizo.move();
-  taizo.display();
-  taizo.hurt();
+    // enemy
+    for (let myEnemy of theEnemies) {
+      myEnemy.hitDetection();
+      myEnemy.move();
+      myEnemy.display();
+    }
+  }
 
-  // enemy
-  for (let myEnemy of theEnemies) {
-    myEnemy.hitDetection();
-    myEnemy.move();
-    myEnemy.display();
+  else {
+  textSize(150);
+  textAlign(CENTER);
+  textFont("playbill");
+  fill("red");
+  text('Game Over', width/2, height/2);
   }
 }
 
-function mousePressed() {
+function enemySpawner() {
   for (let i = 0; i < 4; i++) {
     spawnEnemy(xSpawns[i], ySpawns[i]);
   }
 }
+
+// function mousePressed() {
+// }
 
 function spawnEnemy(x, y) {
   let someEnemy = new Enemy(x, y, taizo.x, taizo.y);
