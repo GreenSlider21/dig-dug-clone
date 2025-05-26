@@ -66,10 +66,10 @@ class Character {
 
   gameOver() {
     if (this.lives > 0) {
-      gameState = "play"
+      gameState = "play";
     }
     else {
-      gameState = "game over"
+      gameState = "game over";
     }
   }
   
@@ -366,11 +366,11 @@ function draw() {
   }
 
   else {
-  textSize(150);
-  textAlign(CENTER);
-  textFont("playbill");
-  fill("red");
-  text('Game Over', width/2, height/2);
+    textSize(100);
+    textAlign(CENTER);
+    textFont("Impact");
+    fill("red");
+    text("Game Over", width/2, height/2);
   }
 }
 
