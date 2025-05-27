@@ -196,11 +196,14 @@ class Enemy {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
   }
 
-  // life() {
-  //   if (this.health <= 0) {
-  //     theEnemies.slice(i);
-  //   }
-  // }
+  life() {
+    if (this.health <= 0) {
+      for (let myEnemy of theEnemies) {
+        deadEnemies.splice(theEnemies.indexOf(myEnemy), 0, 0);
+        theEnemies.splice(theEnemies.indexOf(myEnemy), 1);
+      }
+    }
+  }
 
   hitDetection() {
     // Always update end with the current player position
@@ -241,46 +244,46 @@ class Enemy {
 
     // detecing if the enemy is hit by the player attack
     if (millis() - this.hurtTime > this.hurtDelay) {
-        this.hurtTime = millis();
-        if (keyIsDown(32) === true) {
-          if (this.playerDirection === "up" &&
-             ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
-             (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
-            console.log("Hit Up");
-            this.hit = true;
-            this.health -= 1;
-          }
-          else if (this.playerDirection === "down" &&
-             ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
-             (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
-            console.log("Hit Down");
-            this.hit = true;
-            this.health -= 1;      
-          }
-          else if (this.playerDirection === "left" &&
-             ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
-             (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
-            console.log("Hit Left");
-            this.hit = true;
-            this.health -= 1;        
-          }
-          else if (this.playerDirection === "right" &&
-             ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
-             (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
-            console.log("Hit Right");
-            this.hit = true;
-            this.health -= 1;        
-          }
+      this.hurtTime = millis();
+      if (keyIsDown(32) === true) {
+        if (this.playerDirection === "up" &&
+          ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
+          (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
+          console.log("Hit Up");
+          this.hit = true;
+          this.health --;
         }
-        else {
-          this.hit = false;
-            if (this.health < 3 && (millis() - this.healTime > this.healDelay)) {
-              this.healTime = millis();
-              this.health ++;
-          }
+        else if (this.playerDirection === "down" &&
+          ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
+          (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
+          console.log("Hit Down");
+          this.hit = true;
+          this.health --;      
+        }
+        else if (this.playerDirection === "left" &&
+          ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
+          (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
+          console.log("Hit Left");
+          this.hit = true;
+          this.health --;        
+        }
+        else if (this.playerDirection === "right" &&
+          ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
+          (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
+          console.log("Hit Right");
+          this.hit = true;
+          this.health --;        
+        }
+      }
+      else {
+        this.hit = false;
+        if (this.health < 3 && millis() - this.healTime > this.healDelay) {
+          this.healTime = millis();
+          this.health ++;
         }
       }
     }
+  }
 
   move() {
     if (this.hit === false && this.health === 3){
@@ -364,6 +367,7 @@ function preload() {
 
 let taizo;
 let theEnemies = [];
+let deadEnemies = [1, 2, 3, 4];
 let xSpawns = [2, 21, 7, 18];
 let ySpawns = [9, 6, 22, 24];
 
@@ -378,7 +382,7 @@ function draw() {
   background(220);
   displayGrid();
   // noStroke();
-  if (theEnemies.length < 4) {
+  if (theEnemies.length < 4 && deadEnemies.length % 4 === 0) {
     enemySpawner();
   }
   
@@ -395,7 +399,7 @@ function draw() {
       myEnemy.hitDetection();
       myEnemy.move();
       myEnemy.display();
-      // myEnemy.life();
+      myEnemy.life();
     }
   }
 
