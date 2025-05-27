@@ -175,6 +175,7 @@ class Enemy {
     this.ghosting;
     this.playerDirection = "right";
     this.health = 3;
+    this.hit = false;
   }
 
   display() {
@@ -183,6 +184,12 @@ class Enemy {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+  }
+
+  life() {
+    if (this.health <= 0) {
+      theEnemies.slice(i);
+    }
   }
 
   hitDetection() {
@@ -228,97 +235,106 @@ class Enemy {
          ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
          (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
         console.log("Hit Up");
+        this.hit = true;
         this.health -= 1;
       }
       else if (this.playerDirection === "down" &&
          ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
          (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
         console.log("Hit Down");
+        this.hit = true;
         this.health -= 1;      
       }
       else if (this.playerDirection === "left" &&
          ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
          (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
         console.log("Hit Left");
+        this.hit = true;
         this.health -= 1;        
       }
       else if (this.playerDirection === "right" &&
          ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
          (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
         console.log("Hit Right");
+        this.hit = true;
         this.health -= 1;        
       }
     }
+    else {
+      this.hit = false;
+    }
   }
 
-  move() {    
-    if (millis() - this.enemyTime > this.delay) {
-      this.enemyTime = millis();
-
-      if (grid[this.y][this.x] !== EMPTY || grid[this.y + 1][this.x] !== EMPTY 
-          || grid[this.y][this.x + 1] !== EMPTY || grid[this.y + 1][this.x + 1] !== EMPTY) {
-        this.ghosting = true;
-      }
-
-      else {
-        this.ghosting = false;
-      }
-
-      let gamble;
-      
-      if (this.ghosting === false){
-        gamble = Math.floor(random(100));
-      }
-      
-      if (gamble <= 1 || this.ghosting === true) {
-        this.ghost = true;
-      } 
-      else {
-        this.ghost = false;
-      }
-
-      //L* pathfinding 
-
-      let directions = [];
-      
-      if (this.end.playerY < this.y) {
-        // up
-        directions.push({x: 0, y: -1});
-      }
-      if (this.end.playerY > this.y) {
-        // down
-        directions.push({x: 0, y: 1});
-      }
-      if (this.end.playerX < this.x) {
-        // left
-        directions.push({x: -1, y: 0});
-      } 
-      if (this.end.playerX > this.x) {
-        // right
-        directions.push({x: 1, y: 0});
-      }
-
-      for (let dir of directions) {
-        let nextX = this.x + dir.x;
-        let nextY = this.y + dir.y;
-    
-        // Keeps the enemies within bounds
-        if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
-          // do nothing if movement would go out of bounds
-          return;
+  move() {
+    if (this.hit === false){
+      if (millis() - this.enemyTime > this.delay) {
+        this.enemyTime = millis();
+  
+        if (grid[this.y][this.x] !== EMPTY || grid[this.y + 1][this.x] !== EMPTY 
+            || grid[this.y][this.x + 1] !== EMPTY || grid[this.y + 1][this.x + 1] !== EMPTY) {
+          this.ghosting = true;
         }
-    
-        // Only move if all four grid spaces are empty
-        if (this.ghost === false) {
-          if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
-            && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+  
+        else {
+          this.ghosting = false;
+        }
+  
+        let gamble;
+        
+        if (this.ghosting === false){
+          gamble = Math.floor(random(100));
+        }
+        
+        if (gamble <= 1 || this.ghosting === true) {
+          this.ghost = true;
+        } 
+        else {
+          this.ghost = false;
+        }
+  
+        //L* pathfinding 
+  
+        let directions = [];
+        
+        if (this.end.playerY < this.y) {
+          // up
+          directions.push({x: 0, y: -1});
+        }
+        if (this.end.playerY > this.y) {
+          // down
+          directions.push({x: 0, y: 1});
+        }
+        if (this.end.playerX < this.x) {
+          // left
+          directions.push({x: -1, y: 0});
+        } 
+        if (this.end.playerX > this.x) {
+          // right
+          directions.push({x: 1, y: 0});
+        }
+  
+        for (let dir of directions) {
+          let nextX = this.x + dir.x;
+          let nextY = this.y + dir.y;
+      
+          // Keeps the enemies within bounds
+          if (nextX < 0 || nextY < 0 || nextX + 1 >= COLS || nextY + 1 >= ROWS) {
+            // do nothing if movement would go out of bounds
+            return;
+          }
+      
+          // Only move if all four grid spaces are empty
+          if (this.ghost === false) {
+            if (grid[nextY][nextX] === EMPTY && grid[nextY + 1][nextX] === EMPTY 
+              && grid[nextY][nextX + 1] === EMPTY && grid[nextY + 1][nextX + 1] === EMPTY) {
+              this.x = nextX;
+              this.y = nextY;
+            }
+          }
+          else {
             this.x = nextX;
             this.y = nextY;
           }
-        }
-        else {
-          this.x = nextX;
-          this.y = nextY;
         }
       }
     }
@@ -362,6 +378,7 @@ function draw() {
       myEnemy.hitDetection();
       myEnemy.move();
       myEnemy.display();
+      myEnemy.life();
     }
   }
 
@@ -369,7 +386,7 @@ function draw() {
     textSize(100);
     textAlign(CENTER);
     textFont("Impact");
-    fill("red");
+    fill("white");
     text("Game Over", width/2, height/2);
   }
 }
@@ -392,7 +409,7 @@ function displayGrid() {
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       if (grid[y][x] === EMPTY) {
-        fill("white");
+        fill("sienna");
         square(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE);
       }
       else if (grid[y][x] === DIGABLE) {
