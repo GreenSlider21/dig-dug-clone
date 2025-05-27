@@ -16,7 +16,8 @@ const DIGDELAY = 400;
 
 // varriables
 let grid;
-let level;
+let layout;
+let level = 1;
 let walkTime = 0;
 let digTime = 0;
 let hurtTime = 0;
@@ -36,6 +37,8 @@ class Character {
     this.facingDirection = "right";
     this.lives = 3;
     this.hurtDelay = 200;
+    this.attackDelay = 200;
+    this.attackTime = 0;
   }
   
   display() {
@@ -131,32 +134,35 @@ class Character {
   }
   
   attck() {
-    if (keyIsDown(32) === true) {
-      this.attcking = true;
-      fill(this.pumpColour);
-      if (this.facingDirection === "up"){
-        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 1 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 2 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 3 * CELL_SIZE, CELL_SIZE);
+    if (millis() - this.attackTime > this.attackDelay) {
+      this.attackTime = millis();
+      if (keyIsDown(32) === true) {
+        this.attcking = true;
+        fill(this.pumpColour);
+        if (this.facingDirection === "up"){
+          square(this.x * CELL_SIZE, this.y * CELL_SIZE - 1 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE, this.y * CELL_SIZE - 2 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE, this.y * CELL_SIZE - 3 * CELL_SIZE, CELL_SIZE);
+        }
+        else if (this.facingDirection === "down"){
+          square(this.x * CELL_SIZE, this.y * CELL_SIZE + 2 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE, this.y * CELL_SIZE + 3 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE, this.y * CELL_SIZE + 4 * CELL_SIZE, CELL_SIZE);
+        }
+        else if (this.facingDirection === "left"){
+          square(this.x * CELL_SIZE - 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE - 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE - 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        }
+        else if (this.facingDirection === "right"){
+          square(this.x * CELL_SIZE + 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE + 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+          square(this.x * CELL_SIZE + 4 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        }
       }
-      else if (this.facingDirection === "down"){
-        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 2 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 3 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 4 * CELL_SIZE, CELL_SIZE);
+      else {
+        this.attcking = false;
       }
-      else if (this.facingDirection === "left"){
-        square(this.x * CELL_SIZE - 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE - 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE - 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-      }
-      else if (this.facingDirection === "right"){
-        square(this.x * CELL_SIZE + 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE + 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-        square(this.x * CELL_SIZE + 4 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-      }
-    }
-    else {
-      this.attcking = false;
     }
   }
 }
@@ -169,13 +175,17 @@ class Enemy {
     this.end = {playerX: this.x, playerY: this.y};
     this.colour = "orange";
     this.speed = 1;
-    this.delay = 350;
+    this.delay = 410 - level*10;
     this.enemyTime = 0;
     this.ghost;
     this.ghosting;
     this.playerDirection = "right";
     this.health = 3;
     this.hit = false;
+    this.hurtDelay = 200;
+    this.hurtTime = 0;
+    this.healDelay = 400;
+    this.healTime = 0;
   }
 
   display() {
@@ -186,11 +196,11 @@ class Enemy {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
   }
 
-  life() {
-    if (this.health <= 0) {
-      theEnemies.slice(i);
-    }
-  }
+  // life() {
+  //   if (this.health <= 0) {
+  //     theEnemies.slice(i);
+  //   }
+  // }
 
   hitDetection() {
     // Always update end with the current player position
@@ -230,43 +240,50 @@ class Enemy {
     }
 
     // detecing if the enemy is hit by the player attack
-    if (keyIsDown(32) === true) {
-      if (this.playerDirection === "up" &&
-         ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
-         (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
-        console.log("Hit Up");
-        this.hit = true;
-        this.health -= 1;
-      }
-      else if (this.playerDirection === "down" &&
-         ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
-         (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
-        console.log("Hit Down");
-        this.hit = true;
-        this.health -= 1;      
-      }
-      else if (this.playerDirection === "left" &&
-         ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
-         (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
-        console.log("Hit Left");
-        this.hit = true;
-        this.health -= 1;        
-      }
-      else if (this.playerDirection === "right" &&
-         ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
-         (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
-        console.log("Hit Right");
-        this.hit = true;
-        this.health -= 1;        
+    if (millis() - this.hurtTime > this.hurtDelay) {
+        this.hurtTime = millis();
+        if (keyIsDown(32) === true) {
+          if (this.playerDirection === "up" &&
+             ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
+             (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
+            console.log("Hit Up");
+            this.hit = true;
+            this.health -= 1;
+          }
+          else if (this.playerDirection === "down" &&
+             ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
+             (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
+            console.log("Hit Down");
+            this.hit = true;
+            this.health -= 1;      
+          }
+          else if (this.playerDirection === "left" &&
+             ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
+             (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
+            console.log("Hit Left");
+            this.hit = true;
+            this.health -= 1;        
+          }
+          else if (this.playerDirection === "right" &&
+             ((this.y === this.end.playerY || this.y + 1 === this.end.playerX) && 
+             (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
+            console.log("Hit Right");
+            this.hit = true;
+            this.health -= 1;        
+          }
+        }
+        else {
+          this.hit = false;
+            if (this.health < 3 && (millis() - this.healTime > this.healDelay)) {
+              this.healTime = millis();
+              this.health ++;
+          }
+        }
       }
     }
-    else {
-      this.hit = false;
-    }
-  }
 
   move() {
-    if (this.hit === false){
+    if (this.hit === false && this.health === 3){
       if (millis() - this.enemyTime > this.delay) {
         this.enemyTime = millis();
   
@@ -342,7 +359,7 @@ class Enemy {
 }
 
 function preload() {
-  level = loadJSON("level.json");
+  layout = loadJSON("level.json");
 }
 
 let taizo;
@@ -353,7 +370,7 @@ let ySpawns = [9, 6, 22, 24];
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
   taizo = new Character(12, 16);
-  grid = level;
+  grid = layout;
 }
 
 function draw() {
@@ -378,7 +395,7 @@ function draw() {
       myEnemy.hitDetection();
       myEnemy.move();
       myEnemy.display();
-      myEnemy.life();
+      // myEnemy.life();
     }
   }
 
