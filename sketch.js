@@ -67,6 +67,14 @@ class Character {
     }
   }
 
+  // doesn't work
+  nextLevel() {
+    if (theEnemies.length === 0) {
+      this.x = 12;
+      this.y = 16;
+    }
+  }
+
   gameOver() {
     if (this.lives > 0) {
       gameState = "play";
@@ -198,10 +206,8 @@ class Enemy {
 
   life() {
     if (this.health <= 0) {
-      for (let myEnemy of theEnemies) {
-        deadEnemies.splice(theEnemies.indexOf(myEnemy), 0, 0);
-        theEnemies.splice(theEnemies.indexOf(myEnemy), 1);
-      }
+      deadEnemies.splice(theEnemies.indexOf(this), 0, 0);
+      theEnemies.splice(theEnemies.indexOf(this), 1);
     }
   }
 
@@ -393,6 +399,7 @@ function draw() {
     taizo.move();
     taizo.display();
     taizo.hurt();
+    taizo.nextLevel();
 
     // enemy
     for (let myEnemy of theEnemies) {
