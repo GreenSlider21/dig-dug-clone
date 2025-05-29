@@ -12,12 +12,13 @@ const CELL_SIZE = 20;
 const ROWS = 32;
 const COLS = 28;
 const WALKDELAY = 200;
-const DIGDELAY = 400;
+const DIGDELAY = 350;
 
 // varriables
 let grid;
 let layout;
 let level = 1;
+let prevoiusLevel = 1;
 let walkTime = 0;
 let digTime = 0;
 let hurtTime = 0;
@@ -69,9 +70,10 @@ class Character {
 
   // doesn't work
   nextLevel() {
-    if (theEnemies.length === 0) {
+    if (prevoiusLevel < level) {
       this.x = 12;
       this.y = 16;
+      prevoiusLevel ++;
     }
   }
 
@@ -117,7 +119,7 @@ class Character {
       if (grid[nextY][nextX] === DIGABLE || grid[nextY+1][nextX] === DIGABLE 
         || grid[nextY][nextX+1] === DIGABLE || grid[nextY+1][nextX+1] === DIGABLE) {
         // slower digging delay
-        if (millis() - digTime > DIGDELAY) {
+        if (millis() - digTime > DIGDELAY - level * 10) {
           digTime = millis();
           // deletes old tiles to make tunnels
           grid[nextY][nextX] = EMPTY;
@@ -132,7 +134,7 @@ class Character {
       else if (grid[nextY][nextX] === EMPTY && grid[nextY+1][nextX] === EMPTY 
         && grid[nextY][nextX+1] === EMPTY && grid[nextY+1][nextX+1] === EMPTY) {
         // faster tunnel delay
-        if (millis() - walkTime > WALKDELAY) {
+        if (millis() - walkTime > WALKDELAY - level * 10) {
           walkTime = millis();
           this.x = nextX;
           this.y = nextY;
@@ -311,7 +313,7 @@ class Enemy {
           gamble = Math.floor(random(100));
         }
         
-        if (gamble <= 1 || this.ghosting === true) {
+        if (gamble <= 10 || this.ghosting === true) {
           this.ghost = true;
         } 
         else {
@@ -319,7 +321,6 @@ class Enemy {
         }
   
         //L* pathfinding 
-  
         let directions = [];
         
         if (this.end.playerY < this.y) {
@@ -387,9 +388,10 @@ function draw() {
   // console.log(theEnemies);
   background(220);
   displayGrid();
-  // noStroke();
+  noStroke();
   if (theEnemies.length < 4 && deadEnemies.length % 4 === 0) {
     enemySpawner();
+    level ++;
   }
   
   if (gameState === "play") {
@@ -424,9 +426,6 @@ function enemySpawner() {
     spawnEnemy(xSpawns[i], ySpawns[i]);
   }
 }
-
-// function mousePressed() {
-// }
 
 function spawnEnemy(x, y) {
   let someEnemy = new Enemy(x, y, taizo.x, taizo.y);
