@@ -17,8 +17,8 @@ const DIGDELAY = 350;
 // varriables
 let grid;
 let layout;
-let level = 1;
-let prevoiusLevel = 1;
+let level = 0;
+let prevoiusLevel = 0;
 let walkTime = 0;
 let digTime = 0;
 let hurtTime = 0;
@@ -389,6 +389,7 @@ function draw() {
   background(220);
   displayGrid();
   noStroke();
+  resetLevel();
   if (theEnemies.length < 4 && deadEnemies.length % 4 === 0) {
     enemySpawner();
     level ++;
@@ -430,6 +431,13 @@ function enemySpawner() {
 function spawnEnemy(x, y) {
   let someEnemy = new Enemy(x, y, taizo.x, taizo.y);
   theEnemies.push(someEnemy);
+}
+
+function resetLevel() {
+  if (level > prevoiusLevel) {
+    // preload();
+    prevoiusLevel++;
+  }
 }
 
 function displayGrid() {
