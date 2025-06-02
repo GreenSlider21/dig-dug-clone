@@ -13,6 +13,8 @@ const ROWS = 32;
 const COLS = 28;
 const WALKDELAY = 200;
 const DIGDELAY = 350;
+const MUSICDELAY = 181000;
+const PUMPDELAY = 2000;
 
 // varriables
 let grid;
@@ -24,6 +26,17 @@ let digTime = 0;
 let hurtTime = 0;
 let playerHit = false;
 let gameState = "play";
+let musicState = "play";
+let soundState = "done";
+let music;
+let musicTime = 0;
+let gameEnd;
+let win;
+let die;
+let pop;
+let pump;
+let pumpTime = 0;
+let pumping;
 
 // classes
 // the player character class
@@ -55,6 +68,7 @@ class Character {
     if (playerHit === true) {
       if (millis() - hurtTime > this.hurtDelay) {
         hurtTime = millis();
+        soundState = "die";
         this.lives -= 1;
         this.x = 12;
         this.y = 16;
@@ -83,6 +97,7 @@ class Character {
     }
     else {
       gameState = "game over";
+      musicState = "game over";
     }
   }
   
@@ -148,6 +163,7 @@ class Character {
       this.attackTime = millis();
       if (keyIsDown(32) === true) {
         this.attcking = true;
+        soundState = "pump";
         fill(this.pumpColour);
         if (this.facingDirection === "up"){
           square(this.x * CELL_SIZE, this.y * CELL_SIZE - 1 * CELL_SIZE, CELL_SIZE);
@@ -196,6 +212,7 @@ class Enemy {
     this.hurtTime = 0;
     this.healDelay = 400;
     this.healTime = 0;
+    this.attack = true;
   }
 
   display() {
@@ -210,6 +227,16 @@ class Enemy {
     if (this.health <= 0) {
       deadEnemies.splice(theEnemies.indexOf(this), 0, 0);
       theEnemies.splice(theEnemies.indexOf(this), 1);
+      soundState = "pop";
+    }
+  }
+
+  attacking() {
+    if (this.health < 3) {
+      this.attack = false;
+    }
+    else {
+      this.attack = true;
     }
   }
 
@@ -220,7 +247,7 @@ class Enemy {
     console.log(this.health);
 
     // covers all the posibilities in minimal lines to see if the enemy touched the player
-    if (this.x === this.end.playerX && this.y === this.end.playerY ||
+    if ((this.x === this.end.playerX && this.y === this.end.playerY ||
         this.x === this.end.playerX + 1 && this.y === this.end.playerY || 
         this.x === this.end.playerX + 1 && this.y === this.end.playerY + 1 ||
         this.x === this.end.playerX && this.y === this.end.playerY + 1 ||
@@ -231,7 +258,7 @@ class Enemy {
         this.x === this.end.playerX && this.y + 1 === this.end.playerY ||
         this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
     
-        this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) {
+        this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) && this.attack === true) {
       console.log("GUH!");
       playerHit = true;
     }
@@ -258,30 +285,33 @@ class Enemy {
           ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
           (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
           console.log("Hit Up");
-          this.hit = true;
           this.health --;
+          this.hit = true;
         }
         else if (this.playerDirection === "down" &&
           ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
           (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
           console.log("Hit Down");
-          this.hit = true;
-          this.health --;      
+          this.health --;
+          this.hit = true;   
         }
         else if (this.playerDirection === "left" &&
           ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
           (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
           console.log("Hit Left");
-          this.hit = true;
-          this.health --;        
+          this.health --;
+          this.hit = true;    
         }
         else if (this.playerDirection === "right" &&
           ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
           (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
           console.log("Hit Right");
-          this.hit = true;
-          this.health --;        
+          this.health --;
+          this.hit = true;  
         }
+      }
+      if (this.hit === true) {
+        soundState = "pumping";
       }
       else {
         this.hit = false;
@@ -369,7 +399,19 @@ class Enemy {
 }
 
 function preload() {
+  // grid level layout
   layout = loadJSON("level.json");
+
+  // music
+  music = loadSound("play.m4a");
+  gameEnd = loadSound("game over.mp3");
+  win = loadSound("win.mp3");
+
+  // sound effects
+  die = loadSound("die.mp3");
+  pop = loadSound("pop.mp3");
+  pump = loadSound("pump.mp3");
+  pumping = loadSound("pumping.mp3");
 }
 
 let taizo;
@@ -389,11 +431,9 @@ function draw() {
   background(220);
   displayGrid();
   noStroke();
+  needMoreEnemies();
   resetLevel();
-  if (theEnemies.length < 4 && deadEnemies.length % 4 === 0) {
-    enemySpawner();
-    level ++;
-  }
+  jukebox();
   
   if (gameState === "play") {
     // player
@@ -410,6 +450,7 @@ function draw() {
       myEnemy.move();
       myEnemy.display();
       myEnemy.life();
+      myEnemy.attacking();
     }
   }
 
@@ -419,6 +460,59 @@ function draw() {
     textFont("Impact");
     fill("white");
     text("Game Over", width/2, height/2);
+  }
+}
+
+function jukebox() {
+  // music
+  if (musicState === "play") {
+    music.setVolume(0.5);
+    music.play();
+    musicState = "done";
+  }
+  if (musicState === "game over") {
+    music.stop();
+    gameEnd.setVolume(0.5);
+    gameEnd.play();
+    musicState = "done";
+  }
+  if (musicState === "win") {
+    win.setVolume(0.5);
+    win.play();
+    musicState = "done";
+  }
+  // reset main music
+  if (millis() - musicTime > MUSICDELAY && gameState !== "game over") {
+    musicTime = millis();
+    musicState = "play";
+  }
+
+  // sound effects
+  if (soundState === "die" && taizo.lives > 0) {
+    die.setVolume(0.5);
+    die.play();
+    soundState = "done";
+  }
+  if (soundState === "pop") {
+    pop.setVolume(0.5);
+    pop.play();
+    soundState = "done";
+  }
+  else if (soundState === "pumping") {
+    if (millis() - pumpTime > PUMPDELAY) {
+      pumpTime = millis();
+      pumping.setVolume(0.5);
+      pumping.play();
+      soundState = "done";
+    }
+  }
+  else if (soundState === "pump") {
+    if (millis() - pumpTime > PUMPDELAY) {
+      pumpTime = millis();
+      pump.setVolume(0.5);
+      pump.play();
+      soundState = "done";
+    }
   }
 }
 
@@ -433,10 +527,22 @@ function spawnEnemy(x, y) {
   theEnemies.push(someEnemy);
 }
 
+function needMoreEnemies () {
+  if (theEnemies.length < 4 && deadEnemies.length % 4 === 0) {
+    enemySpawner();
+    level ++;
+    if (deadEnemies.length > 4){
+      musicState = "win";
+    }
+  }
+}
+
 function resetLevel() {
   if (level > prevoiusLevel) {
     // preload();
     prevoiusLevel++;
+    taizo.x = 12;
+    taizo.y = 16;
   }
 }
 
