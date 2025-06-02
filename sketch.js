@@ -539,7 +539,7 @@ function needMoreEnemies () {
 
 function resetLevel() {
   if (level > prevoiusLevel) {
-    // preload();
+    // structured clone of level preload();
     prevoiusLevel++;
     taizo.x = 12;
     taizo.y = 16;
