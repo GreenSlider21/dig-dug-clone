@@ -19,6 +19,7 @@ const PUMPDELAY = 2000;
 // varriables
 let grid;
 let layout;
+let layoutClone;
 let level = 0;
 let prevoiusLevel = 0;
 let walkTime = 0;
@@ -41,7 +42,7 @@ let pumping;
 // classes
 // the player character class
 class Character {
-  constructor(x, y){
+  constructor(x, y) {
     this.x = x;
     this.y = y;
     this.colour = "blue";
@@ -401,6 +402,8 @@ class Enemy {
 function preload() {
   // grid level layout
   layout = loadJSON("level.json");
+  layoutClone = loadJSON("level.json");
+
 
   // music
   music = loadSound("play.m4a");
@@ -423,16 +426,16 @@ let ySpawns = [9, 6, 22, 24];
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
   taizo = new Character(12, 16);
-  grid = layout;
 }
 
 function draw() {
   // console.log(theEnemies);
   background(220);
+  resetLevel();
+  grid = layout;
   displayGrid();
   noStroke();
   needMoreEnemies();
-  resetLevel();
   jukebox();
   
   if (gameState === "play") {
@@ -539,7 +542,7 @@ function needMoreEnemies () {
 
 function resetLevel() {
   if (level > prevoiusLevel) {
-    // structured clone of level preload();
+    grid = layoutClone;
     prevoiusLevel++;
     taizo.x = 12;
     taizo.y = 16;
