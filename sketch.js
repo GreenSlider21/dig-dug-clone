@@ -83,15 +83,6 @@ class Character {
     }
   }
 
-  // doesn't work
-  nextLevel() {
-    if (prevoiusLevel < level) {
-      this.x = 12;
-      this.y = 16;
-      prevoiusLevel ++;
-    }
-  }
-
   gameOver() {
     if (this.lives > 0) {
       gameState = "play";
@@ -402,8 +393,6 @@ class Enemy {
 function preload() {
   // grid level layout
   layout = loadJSON("level.json");
-  layoutClone = loadJSON("level.json");
-
 
   // music
   music = loadSound("play.m4a");
@@ -425,6 +414,7 @@ let ySpawns = [9, 6, 22, 24];
 
 function setup() {
   createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
+  grid = layout;
   taizo = new Character(12, 16);
 }
 
@@ -432,7 +422,6 @@ function draw() {
   // console.log(theEnemies);
   background(220);
   resetLevel();
-  grid = layout;
   displayGrid();
   noStroke();
   needMoreEnemies();
@@ -445,7 +434,6 @@ function draw() {
     taizo.move();
     taizo.display();
     taizo.hurt();
-    taizo.nextLevel();
 
     // enemy
     for (let myEnemy of theEnemies) {
