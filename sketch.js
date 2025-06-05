@@ -38,6 +38,8 @@ let pop;
 let pump;
 let pumpTime = 0;
 let pumping;
+let score = 0;
+let highScore = 0;
 
 // classes
 // the player character class
@@ -62,7 +64,7 @@ class Character {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-    console.log(this.lives);
+    // console.log(this.lives);
   }
 
   hurt() {
@@ -94,7 +96,7 @@ class Character {
   }
   
   move() {
-    console.log(this.x, this.y, this.facingDirection, this.attcking);
+    // console.log(this.x, this.y, this.facingDirection, this.attcking);
     let nextX = this.x;
     let nextY = this.y;
   
@@ -220,6 +222,11 @@ class Enemy {
       deadEnemies.splice(theEnemies.indexOf(this), 0, 0);
       theEnemies.splice(theEnemies.indexOf(this), 1);
       soundState = "pop";
+      score += floor(random(100));
+      if (score > highScore) {
+        highScore = score;
+        storeItem("highPoint", highScore);
+      }
     }
   }
 
@@ -236,7 +243,7 @@ class Enemy {
     // Always update end with the current player position
     this.end.playerX = taizo.x;
     this.end.playerY = taizo.y;
-    console.log(this.health);
+    // console.log(this.health);
 
     // covers all the posibilities in minimal lines to see if the enemy touched the player
     if ((this.x === this.end.playerX && this.y === this.end.playerY ||
@@ -251,7 +258,7 @@ class Enemy {
         this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
     
         this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) && this.attack === true) {
-      console.log("GUH!");
+      // console.log("GUH!");
       playerHit = true;
     }
 
@@ -276,28 +283,28 @@ class Enemy {
         if (this.playerDirection === "up" &&
           ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
           (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
-          console.log("Hit Up");
+          // console.log("Hit Up");
           this.health --;
           this.hit = true;
         }
         else if (this.playerDirection === "down" &&
           ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
           (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
-          console.log("Hit Down");
+          // console.log("Hit Down");
           this.health --;
           this.hit = true;   
         }
         else if (this.playerDirection === "left" &&
           ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
           (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
-          console.log("Hit Left");
+          // console.log("Hit Left");
           this.health --;
           this.hit = true;    
         }
         else if (this.playerDirection === "right" &&
           ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
           (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
-          console.log("Hit Right");
+          // console.log("Hit Right");
           this.health --;
           this.hit = true;  
         }
@@ -413,19 +420,26 @@ let xSpawns = [2, 21, 7, 18];
 let ySpawns = [9, 6, 22, 24];
 
 function setup() {
-  createCanvas(COLS * CELL_SIZE, ROWS * CELL_SIZE);
+  createCanvas(COLS * CELL_SIZE + 100, ROWS * CELL_SIZE + 50);
+
+  if (getItem("highPoint")) {
+    highScore = getItem("highPoint");
+  }
+
   grid = layout;
   taizo = new Character(12, 16);
 }
 
 function draw() {
   // console.log(theEnemies);
-  background(220);
+  background(20);
   resetLevel();
   displayGrid();
   noStroke();
   needMoreEnemies();
   jukebox();
+  displayScore();
+  displayLives();
   
   if (gameState === "play") {
     // player
@@ -438,7 +452,7 @@ function draw() {
     // enemy
     for (let myEnemy of theEnemies) {
       myEnemy.hitDetection();
-      myEnemy.move();
+      // myEnemy.move();
       myEnemy.display();
       myEnemy.life();
       myEnemy.attacking();
@@ -450,7 +464,7 @@ function draw() {
     textAlign(CENTER);
     textFont("Impact");
     fill("white");
-    text("Game Over", width/2, height/2);
+    text("Game Over", width/2 - 50, height/2);
   }
 }
 
@@ -530,7 +544,7 @@ function needMoreEnemies () {
 
 function resetLevel() {
   if (level > prevoiusLevel) {
-    grid = layoutClone;
+    // grid = layoutClone;
     prevoiusLevel++;
     taizo.x = 12;
     taizo.y = 16;
@@ -550,4 +564,27 @@ function displayGrid() {
       }
     }
   }
+}
+
+function displayScore() {
+  textSize(30);
+  textAlign(CENTER);
+  textFont("Impact");
+  fill("dodgerblue");
+  text("SCORE", width-50, 30);
+  text(score, width-50, 60);
+  text("HIGH", width-50, 130);
+  text("SCORE", width-50, 160); 
+  text(highScore, width-50, 190);
+}
+
+function displayLives() {
+  textSize(30);
+  textAlign(CENTER);
+  textFont("Impact");
+  fill("dodgerblue");
+  text("LIVES", 50, height-10);
+  text(taizo.lives, 110, height-10);
+  textSize(50);
+  text(":", 90, height-9);
 }
