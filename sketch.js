@@ -40,6 +40,8 @@ let pumpTime = 0;
 let pumping;
 let score = 0;
 let highScore = 0;
+let scoreLives = 1000;
+let kills = 0;
 
 // classes
 // the player character class
@@ -64,7 +66,13 @@ class Character {
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-    // console.log(this.lives);
+  }
+
+  heal() {
+    if (score >= scoreLives) {
+      scoreLives += 1000;
+      this.lives++;
+    }
   }
 
   hurt() {
@@ -219,6 +227,7 @@ class Enemy {
 
   life() {
     if (this.health <= 0) {
+      kills++;
       deadEnemies.splice(theEnemies.indexOf(this), 0, 0);
       theEnemies.splice(theEnemies.indexOf(this), 1);
       soundState = "pop";
@@ -440,6 +449,7 @@ function draw() {
   jukebox();
   displayScore();
   displayLives();
+  displayKills();
   
   if (gameState === "play") {
     // player
@@ -448,6 +458,7 @@ function draw() {
     taizo.move();
     taizo.display();
     taizo.hurt();
+    taizo.heal();
 
     // enemy
     for (let myEnemy of theEnemies) {
@@ -585,6 +596,28 @@ function displayLives() {
   fill("dodgerblue");
   text("LIVES", 50, height-10);
   text(taizo.lives, 110, height-10);
+
+  text("1UP IN", 230, height-10);
+  text(scoreLives - score, 305, height-10);
+  text("POINTS", 390, height-10);
+
   textSize(50);
   text(":", 90, height-9);
+}
+
+function displayKills() {
+  textSize(30);
+  textAlign(CENTER);
+  textFont("Impact");
+  fill("dodgerblue");
+  text("KILLS", 500, height-10);
+  text(kills, 560, height-10);
+
+  textSize(50);
+  text(":", 540, height-9);
+
+  for (let i = 0; i < kills; i++) {
+    fill("orange");
+    square(width - CELL_SIZE, height - CELL_SIZE - i * CELL_SIZE, CELL_SIZE);
+  }
 }
