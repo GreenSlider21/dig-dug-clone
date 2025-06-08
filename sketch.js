@@ -11,8 +11,8 @@ const DIGABLE = 1;
 const CELL_SIZE = 20;
 const ROWS = 32;
 const COLS = 28;
-const WALKDELAY = 200;
-const DIGDELAY = 350;
+const WALKDELAY = 150;
+const DIGDELAY = 200;
 const MUSICDELAY = 181000;
 const PUMPDELAY = 2000;
 
@@ -35,7 +35,6 @@ let gameEnd;
 let win;
 let die;
 let pop;
-let pump;
 let pumpTime = 0;
 let pumping;
 let score = 0;
@@ -56,8 +55,6 @@ class Character {
     this.facingDirection = "right";
     this.lives = 3;
     this.hurtDelay = 200;
-    this.attackDelay = 200;
-    this.attackTime = 0;
   }
   
   display() {
@@ -104,24 +101,23 @@ class Character {
   }
   
   move() {
-    // console.log(this.x, this.y, this.facingDirection, this.attcking);
     let nextX = this.x;
     let nextY = this.y;
   
     if (this.attcking === false){
-      if (keyIsDown(87)) {
+      if (keyIsDown(87) || keyIsDown(38)) {
         nextY -= this.speed;
         this.facingDirection = "up";
       }
-      else if (keyIsDown(83)) {
+      else if (keyIsDown(83) || keyIsDown(40)) {
         nextY += this.speed;
         this.facingDirection = "down";
       }
-      else if (keyIsDown(65)) {
+      else if (keyIsDown(65) || keyIsDown(37)) {
         nextX -= this.speed;
         this.facingDirection = "left";
       }
-      else if (keyIsDown(68)) {
+      else if (keyIsDown(68) || keyIsDown(39)) {
         nextX += this.speed;
         this.facingDirection = "right";
       }
@@ -161,36 +157,32 @@ class Character {
   }
   
   attck() {
-    if (millis() - this.attackTime > this.attackDelay) {
-      this.attackTime = millis();
-      if (keyIsDown(32) === true) {
-        this.attcking = true;
-        soundState = "pump";
-        fill(this.pumpColour);
-        if (this.facingDirection === "up"){
-          square(this.x * CELL_SIZE, this.y * CELL_SIZE - 1 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE, this.y * CELL_SIZE - 2 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE, this.y * CELL_SIZE - 3 * CELL_SIZE, CELL_SIZE);
-        }
-        else if (this.facingDirection === "down"){
-          square(this.x * CELL_SIZE, this.y * CELL_SIZE + 2 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE, this.y * CELL_SIZE + 3 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE, this.y * CELL_SIZE + 4 * CELL_SIZE, CELL_SIZE);
-        }
-        else if (this.facingDirection === "left"){
-          square(this.x * CELL_SIZE - 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE - 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE - 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-        }
-        else if (this.facingDirection === "right"){
-          square(this.x * CELL_SIZE + 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE + 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-          square(this.x * CELL_SIZE + 4 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
-        }
+    if (keyIsDown(32) === true) {
+      this.attcking = true;
+      fill(this.pumpColour);
+      if (this.facingDirection === "up"){
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 2 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE - 3 * CELL_SIZE, CELL_SIZE);
       }
-      else {
-        this.attcking = false;
+      else if (this.facingDirection === "down"){
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 2 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 3 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE, this.y * CELL_SIZE + 4 * CELL_SIZE, CELL_SIZE);
       }
+      else if (this.facingDirection === "left"){
+        square(this.x * CELL_SIZE - 1 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE - 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE - 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+      }
+      else if (this.facingDirection === "right"){
+        square(this.x * CELL_SIZE + 2 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE + 3 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+        square(this.x * CELL_SIZE + 4 * CELL_SIZE, this.y * CELL_SIZE + 1 * CELL_SIZE, CELL_SIZE);
+      }
+    }
+    else {
+      this.attcking = false;
     }
   }
 }
@@ -202,17 +194,15 @@ class Enemy {
     this.y = y;
     this.end = {playerX: this.x, playerY: this.y};
     this.colour = "orange";
-    this.speed = 1;
-    this.delay = 410 - level*10;
+    this.delay = 490 - level*70;
     this.enemyTime = 0;
     this.ghost;
     this.ghosting;
-    this.playerDirection = "right";
     this.health = 3;
     this.hit = false;
-    this.hurtDelay = 200;
+    this.hurtDelay = 600;
     this.hurtTime = 0;
-    this.healDelay = 400;
+    this.healDelay = 900;
     this.healTime = 0;
     this.attack = true;
   }
@@ -252,7 +242,6 @@ class Enemy {
     // Always update end with the current player position
     this.end.playerX = taizo.x;
     this.end.playerY = taizo.y;
-    // console.log(this.health);
 
     // covers all the posibilities in minimal lines to see if the enemy touched the player
     if ((this.x === this.end.playerX && this.y === this.end.playerY ||
@@ -267,62 +256,47 @@ class Enemy {
         this.x === this.end.playerX + 1 && this.y + 1 === this.end.playerY ||
     
         this.x + 1 === this.end.playerX && this.y + 1 === this.end.playerY) && this.attack === true) {
-      // console.log("GUH!");
       playerHit = true;
-    }
-
-    // taking the player direction of attack
-    if (keyIsDown(87)) {
-      this.playerDirection = "up";
-    }
-    else if (keyIsDown(83)) {
-      this.playerDirection = "down";
-    }
-    else if (keyIsDown(65)) {
-      this.playerDirection = "left";
-    }
-    else if (keyIsDown(68)) {
-      this.playerDirection = "right";
     }
 
     // detecing if the enemy is hit by the player attack
     if (millis() - this.hurtTime > this.hurtDelay) {
       this.hurtTime = millis();
       if (keyIsDown(32) === true) {
-        if (this.playerDirection === "up" &&
+        if (taizo.facingDirection === "up" &&
           ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
           (this.y + 1 === this.end.playerY - 1 || this.y + 1 === this.end.playerY - 2 || this.y + 1 === this.end.playerY - 3))) {
-          // console.log("Hit Up");
           this.health --;
           this.hit = true;
+          soundState = "pumping";
+          this.hit = false;
         }
-        else if (this.playerDirection === "down" &&
+        else if (taizo.facingDirection === "down" &&
           ((this.x === this.end.playerX || this.x + 1 === this.end.playerX) && 
           (this.y === this.end.playerY + 2 || this.y === this.end.playerY + 3 || this.y === this.end.playerY + 4))) {
-          // console.log("Hit Down");
           this.health --;
-          this.hit = true;   
+          this.hit = true;
+          soundState = "pumping";
+          this.hit = false;
         }
-        else if (this.playerDirection === "left" &&
+        else if (taizo.facingDirection === "left" &&
           ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
           (this.x + 1 === this.end.playerX - 1 || this.x + 1 === this.end.playerX - 2 || this.x + 1 === this.end.playerX - 3))){
-          // console.log("Hit Left");
           this.health --;
-          this.hit = true;    
+          this.hit = true;
+          soundState = "pumping";
+          this.hit = false;
         }
-        else if (this.playerDirection === "right" &&
+        else if (taizo.facingDirection === "right" &&
           ((this.y === this.end.playerY + 1 || this.y + 1 === this.end.playerY + 1) && 
           (this.x === this.end.playerX + 2 || this.x === this.end.playerX + 3 || this.x === this.end.playerX + 4))){
-          // console.log("Hit Right");
           this.health --;
-          this.hit = true;  
+          this.hit = true;
+          soundState = "pumping";
+          this.hit = false;
         }
       }
-      if (this.hit === true) {
-        soundState = "pumping";
-      }
       else {
-        this.hit = false;
         if (this.health < 3 && millis() - this.healTime > this.healDelay) {
           this.healTime = millis();
           this.health ++;
@@ -418,7 +392,6 @@ function preload() {
   // sound effects
   die = loadSound("die.mp3");
   pop = loadSound("pop.mp3");
-  pump = loadSound("pump.mp3");
   pumping = loadSound("pumping.mp3");
 }
 
@@ -440,7 +413,6 @@ function setup() {
 }
 
 function draw() {
-  // console.log(theEnemies);
   background(20);
   resetLevel();
   displayGrid();
@@ -463,7 +435,7 @@ function draw() {
     // enemy
     for (let myEnemy of theEnemies) {
       myEnemy.hitDetection();
-      // myEnemy.move();
+      myEnemy.move();
       myEnemy.display();
       myEnemy.life();
       myEnemy.attacking();
@@ -519,14 +491,6 @@ function jukebox() {
       pumpTime = millis();
       pumping.setVolume(0.5);
       pumping.play();
-      soundState = "done";
-    }
-  }
-  else if (soundState === "pump") {
-    if (millis() - pumpTime > PUMPDELAY) {
-      pumpTime = millis();
-      pump.setVolume(0.5);
-      pump.play();
       soundState = "done";
     }
   }
