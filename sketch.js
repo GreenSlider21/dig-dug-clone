@@ -19,14 +19,13 @@ const PUMPDELAY = 2000;
 // varriables
 let grid;
 let layout;
-let layoutClone;
 let level = 0;
 let prevoiusLevel = 0;
 let walkTime = 0;
 let digTime = 0;
 let hurtTime = 0;
 let playerHit = false;
-let gameState = "play";
+let gameState = "pause";
 let musicState = "play";
 let soundState = "done";
 let music;
@@ -208,6 +207,12 @@ class Enemy {
   }
 
   display() {
+    if (this.health < 3) {
+      this.colour = "green";
+    }
+    else {
+      this.colour = "orange";
+    }
     fill(this.colour);
     square(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
     square(this.x * CELL_SIZE + 1 * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE);
@@ -221,7 +226,7 @@ class Enemy {
       deadEnemies.splice(theEnemies.indexOf(this), 0, 0);
       theEnemies.splice(theEnemies.indexOf(this), 1);
       soundState = "pop";
-      score += floor(random(100));
+      score += floor(random(50, 100));
       if (score > highScore) {
         highScore = score;
         storeItem("highPoint", highScore);
@@ -325,7 +330,7 @@ class Enemy {
           gamble = Math.floor(random(100));
         }
         
-        if (gamble <= 10 || this.ghosting === true) {
+        if (gamble <= 5 || this.ghosting === true) {
           this.ghost = true;
         } 
         else {
@@ -422,8 +427,29 @@ function draw() {
   displayScore();
   displayLives();
   displayKills();
+  displayControls();
+  gameStateCheck();
+}
+
+function keyTyped() {
+  if (gameState === "pause" && key === "p") {
+    gameState = "play";
+  }
+  else if (gameState === "play" && key === "p") {
+    gameState = "pause";
+  }
+}
+
+function gameStateCheck() {
+    if (gameState === "pause") {
+    textSize(50);
+    textAlign(CENTER);
+    textFont("Impact");
+    fill("white");
+    text("PRESS P TO START & PAUSE", width/2 - 50, height/2);
+  }
   
-  if (gameState === "play") {
+  else if (gameState === "play") {
     // player
     taizo.gameOver();
     taizo.attck();
@@ -442,7 +468,7 @@ function draw() {
     }
   }
 
-  else {
+  else if (gameState === "game over") {
     textSize(100);
     textAlign(CENTER);
     textFont("Impact");
@@ -519,7 +545,6 @@ function needMoreEnemies () {
 
 function resetLevel() {
   if (level > prevoiusLevel) {
-    // grid = layoutClone;
     prevoiusLevel++;
     taizo.x = 12;
     taizo.y = 16;
@@ -576,6 +601,9 @@ function displayKills() {
   fill("dodgerblue");
   text("KILLS", 500, height-10);
   text(kills, 560, height-10);
+  text("KILL", width-60, 560);
+  text("OR BE", width-60, 590);
+  text("KILLED", width-60, 620);
 
   textSize(50);
   text(":", 540, height-9);
@@ -584,4 +612,61 @@ function displayKills() {
     fill("orange");
     square(width - CELL_SIZE, height - CELL_SIZE - i * CELL_SIZE, CELL_SIZE);
   }
+}
+
+function displayControls() {
+  textSize(15);
+  textAlign(CENTER);
+  textFont("Impact");
+  fill("dodgerblue");
+  text("MOVEMENT", width-60, 260);
+  text("ATTACK", width-60, 350);
+
+  if (keyIsDown(87) || keyIsDown(38)) {
+    fill("white");
+  }
+  else {
+    fill("dodgerblue");
+  }
+  text("W", width-60, 290);
+
+  if (keyIsDown(65) || keyIsDown(37)) {
+    fill("white");
+  }
+  else {
+    fill("dodgerblue");
+  }
+  text("A", width-80, 315);
+  
+  if (keyIsDown(83) || keyIsDown(40)) {
+    fill("white");
+  }
+  else {
+    fill("dodgerblue");
+  }
+  text("S", width-60, 315);
+
+  if (keyIsDown(68) || keyIsDown(39)) {
+    fill("white");
+  }
+  else {
+    fill("dodgerblue");
+  }
+  text("D", width-40, 315);
+
+    if (keyIsDown(32)) {
+    fill("white");
+  }
+  else {
+    fill("dodgerblue");
+  }
+  text("SPACE", width-60, 370);
+
+  fill("blue");
+  text("YOU", width-80, 450);
+  square(width-90, 470, CELL_SIZE);
+
+  fill("orange")
+  text("THEM", width-40, 450);
+  square(width-50, 470, CELL_SIZE);
 }
