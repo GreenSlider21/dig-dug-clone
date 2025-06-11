@@ -4,6 +4,8 @@
 //
 // Extra for Experts:
 // Got an actually working sound system that detect a multitude of diffent sounds and what to play when
+// was able to get the nice to haves of scores, highscores, and gaining lives at certain point values
+// trasnferd infromation from two unrealatd classes without extend
 
 // constants
 const EMPTY = 0;
@@ -207,7 +209,7 @@ class Enemy {
     this.y = y;
     this.end = {playerX: this.x, playerY: this.y};
     this.colour = "orange";
-    this.delay = 490 - level*70;
+    this.delay = 490 - level*70; // difficulty changer
     this.enemyTime = 0;
     this.ghost;
     this.ghosting;
